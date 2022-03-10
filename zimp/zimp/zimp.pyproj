@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c15d9bc5-7889-477c-b6b0-086827a1dd91</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Game.py</StartupFile>
+    <StartupFile>SetUp.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -36,6 +36,7 @@
     <Compile Include="DevCard.py" />
     <Compile Include="Game.py" />
     <Compile Include="Item.py" />
+    <Compile Include="SetUp.py" />
     <Compile Include="Player.py" />
     <Compile Include="Tile.py" />
   </ItemGroup>
