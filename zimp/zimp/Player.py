@@ -64,7 +64,7 @@ class Player():
             "combination": 1,
             }
 
-        add_props.item.get_item_prop(), None)()
+        add_props.get(item.get_item_prop(), None)()
 
 # TODO remove this only tester code
 player = Player("hello")
