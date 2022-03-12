@@ -66,6 +66,7 @@ class Player():
 
         add_props.item.get_item_prop(), None)()
 
+# TODO remove this only tester code
 player = Player("hello")
 item1 = Item(False, "hammer", "add attack 1", 3)
 item2 = Item(False, "hammer", "add health", 3)
