@@ -5,3 +5,5 @@ class Item():
         self.item_prop = item_prop 
         self.uses = uses
 
+    def get_item_prop(self):
+        return self.item_prop

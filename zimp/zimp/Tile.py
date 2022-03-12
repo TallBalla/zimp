@@ -49,3 +49,6 @@ class Tile():
     # Gets tile location in terms of the game.
     def get_is_inside(self):
         return self.is_inside
+
+    def get_tile_prop(self):
+        return self.tile_prop

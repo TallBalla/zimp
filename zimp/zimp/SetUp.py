@@ -30,12 +30,16 @@ class SetUp():
         #self.add_tile(2, "Garage", None, False)
 
         # Inside tiles
-        self.add_tile(1, True,  None, "Bathroom", None)
-        self.add_tile(3, True,  "+1 Health if end turn here.","Kitchen", "health increase")
+        self.add_tile(1, True, None, "Bathroom", None)
+        self.add_tile(3, True,
+                      "+1 Health if end turn here.",
+                      "Kitchen", "health increase")
         self.add_tile(1, True, 
-                      "May draw a new card to find an item.", "Storage", "item")
+                      "May draw a new card to find an item.", 
+                      "Storage", "item")
         self.add_tile(2, True, 
-                      "Resolve a new card to find totem","Evil Temple", "totem")
+                      "Resolve a new card to find totem",
+                      "Evil Temple", "totem")
         self.add_tile(3, True, None,  "Family Room",  None)
         self.add_tile(4, True,  None, "Dinning Room", "exterior door")
 

@@ -11,21 +11,26 @@ class Game():
         return self.is_inside
 
     def exterior_door_handler(self):
-        print("!!! exterior_door_handler")
+        # TODO switch list to ouside 
+        self.is_inside = not self.is_inside
 
     def health_increase_handler(self):
-        print("!!! health_increase_handler")
+        self.player.add_health(1)
 
     def item_handler(self):
         print("!!! item_handler")
 
     def totem_handler(self):
-        print("!!! totem_handler")
+        if self.has_totem:
+            return
+
+        # TODO Draw card to get totem
+        self.has_totem = True
 
     def totem_bural_handler(self):
         print("!!! totem_bural_handler")
 
-    def check_tile_prop(self, tile):
+    def tile_prop_handler(self, tile):
         """ handles all the checks for the tile properties
         to see if they have any special characterics """
         props = {
@@ -35,7 +40,7 @@ class Game():
             "totem": self.totem_handler,
             "totem bural": self.totem_bural_handler
             }
-        props.get(tile.tile_prop, None)()
+        props.get(tile.get_tile_prop(), None)()
 
     def complete_game(self):
         print("you have won")
@@ -51,8 +56,9 @@ class Game():
         new_tile.prev_tile_num = current_tile.tile_num
         print(new_tile.tile_name, new_tile.prev_tile_num)
 
-        self.check_tile_prop(new_tile)
+        self.tile_prop_handler(new_tile)
         self.current_index += 1
 
     def reshuffle(self):
         self.time += 1
+
