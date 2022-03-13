@@ -5,5 +5,14 @@ class Item():
         self.item_prop = item_prop 
         self.uses = uses
 
+    def get_item_name(self):
+        return self.item_name
+
     def get_item_prop(self):
         return self.item_prop
+
+    def get_use_item(self):
+        return self.uses
+
+    def use_item(self):
+        self.uses -= 1

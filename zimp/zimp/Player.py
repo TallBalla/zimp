@@ -9,22 +9,6 @@ class Player():
         self.health = 6
         self.user_name = user_name
 
-    def remove_item_handler(self, item):
-        self.item_prop_handler(item)
-        self.item = None
-
-    def add_attack(self, item_attack):
-        self.attack += item_attack
-
-    def add_health(self, health):
-        self.health += health
-
-    def remove_attack(self, attack):
-        self.attack -= attack
-
-    def remove_health(self, health):
-        self.health -= health
-
     # Item one property and setter
     @property
     def item_one(self):
@@ -49,10 +33,44 @@ class Player():
         self._item_two = new_item
         self.item_prop_handler(new_item)
 
-    # TODO get the method for removing a item sorted
+    def cower(self):
+        # TODO remove card from stack
+        self.health += 3
+        
+    def runaway(self):
+        if self.item_one.get_item_name() == "Oil" or
+           self.item_two.get_item_name() == "Oil":
+               # TODO check if the player wantes to use oil
+               return
+        # TODO there will be a method in the game class
+        # allowing a player to go back a tile
+        self.health -= 1
+
+    def remove_item_handler(self, item):
+        self.item_prop_handler(item)
+        self.item = None
+
+    def add_attack(self, item_attack):
+        self.attack += item_attack
+
+    def add_health(self, health):
+        self.health += health
+
+    def remove_attack(self, attack):
+        self.attack -= attack
+
+    def remove_health(self, health):
+        self.health -= health
+
+    def check_item_uses(self, item):
+        return item.get_use_item() == 0
+
+
+
+    # TODO get the method for removing a item 
     # Got partial idea from here 
     # https://stackoverflow.com/questions/36648887/python-switch-case-allowing-optional-arguments
-    def item_prop_handler(self, item, ):
+    def item_prop_handler(self, item):
         """ handles all the checks for the tile properties
         to see if they have any special characterics """
         # TODO: add methods to combination field
