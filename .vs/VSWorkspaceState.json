@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\zimp",
+    "\\zimp\\zimp"
   ],
+  "SelectedNode": "\\zimp\\zimp\\Player.py",
   "PreviewInSolutionExplorer": false
 }
