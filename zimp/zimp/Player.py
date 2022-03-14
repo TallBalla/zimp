@@ -13,6 +13,10 @@ class Player():
         self.item_prop_handler(item)
         self.item = None
 
+    # TODO fill out the functionality of w
+    def combination_handler(self):
+        return "hello"
+
     def add_attack(self, item_attack):
         self.attack += item_attack
 
@@ -61,7 +65,7 @@ class Player():
             "add attack 2": partial(self.add_attack, 2),
             "add attack 3": partial(self.add_attack, 3),
             "add health": partial(self.add_health, 1),
-            "combination": 1,
+            "combination": self.combination_handler,
             }
 
         add_props.get(item.get_item_prop(), None)()
