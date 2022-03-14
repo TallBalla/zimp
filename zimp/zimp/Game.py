@@ -10,6 +10,14 @@ class Game():
     def check_is_inside(self):
         return self.is_inside
 
+    def runaway(self):
+        # TODO ask what room a player wants to run into
+        self.player.runaway()
+
+    def cower(self):
+        # TODO discard devcard from the deak for the round
+        self.player.cower()
+
     def exterior_door_handler(self):
         # TODO switch list to ouside 
         self.is_inside = not self.is_inside
@@ -23,8 +31,7 @@ class Game():
     def totem_handler(self):
         if self.has_totem:
             return
-
-        # TODO Draw card to get totem
+        # TODO draw devcard to get totem
         self.has_totem = True
 
     def totem_bural_handler(self):

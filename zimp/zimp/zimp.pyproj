@@ -28,6 +28,7 @@
     <Compile Include="SetUp.py" />
     <Compile Include="Player.py" />
     <Compile Include="Tile.py" />
+    <Compile Include="View.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.9" />

@@ -38,8 +38,7 @@ class Player():
         self.health += 3
         
     def runaway(self):
-        if self.item_one.get_item_name() == "Oil" or
-           self.item_two.get_item_name() == "Oil":
+        if self.item_one.get_item_name() == "Oil" or self.item_two.get_item_name() == "Oil":
                # TODO check if the player wantes to use oil
                return
         # TODO there will be a method in the game class
@@ -49,6 +48,12 @@ class Player():
     def remove_item_handler(self, item):
         self.item_prop_handler(item)
         self.item = None
+
+    # TODO give functionality to this method 
+    # This will invole checking if another device exists
+    # If it does it increase attack damager
+    def combination_handler(self):
+        return
 
     def add_attack(self, item_attack):
         self.attack += item_attack
@@ -65,8 +70,6 @@ class Player():
     def check_item_uses(self, item):
         return item.get_use_item() == 0
 
-
-
     # TODO get the method for removing a item 
     # Got partial idea from here 
     # https://stackoverflow.com/questions/36648887/python-switch-case-allowing-optional-arguments
@@ -77,7 +80,6 @@ class Player():
         add_props = {
             "add attack 1": partial(self.add_attack, 1),
             "add attack 2": partial(self.add_attack, 2),
-            "add attack 3": partial(self.add_attack, 3),
             "add health": partial(self.add_health, 1),
             "combination": self.combination_handler,
             }
