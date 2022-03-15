@@ -75,14 +75,14 @@ if __name__ == "__main__":
     
 
     game = Game(setup.get_tiles(), player)
-    print(game.get_current_tile_name())
+    
     game.draw_tile()
-    print(game.get_current_tile_name())
+    
     game.draw_tile()
-    print(game.get_current_tile_name())
+    
     game.runaway()
-    print(game.get_current_tile_name())    
+    
     game.runaway()
-    print(game.get_current_tile_name())
+    
     game.draw_tile()
-    print(game.get_current_tile_name())
+    

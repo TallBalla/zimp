@@ -83,13 +83,11 @@ class Player():
     def check_item_uses(self, item):
         return item.get_use_item() == 0
 
-    # TODO get the method for removing a item 
     # Got partial idea from here 
     # https://stackoverflow.com/questions/36648887/python-switch-case-allowing-optional-arguments
     def item_prop_handler(self, item):
         """ handles all the checks for the tile properties
         to see if they have any special characterics """
-        # TODO: add methods to combination field
         add_props = {
             "add attack 1": partial(self.add_attack, 1),
             "add attack 2": partial(self.add_attack, 2),

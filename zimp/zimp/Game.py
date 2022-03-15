@@ -7,12 +7,6 @@ class Game():
         self.tiles = tiles
         self.time = 9
 
-    def get_current_tile_name(self):
-        return f'''{self.tiles[self.current_index].tile_name}
-                    current tile num {self.tiles[self.current_index].tile_num}
-                    previous tile num {self.tiles[self.current_index].prev_tile_num}
-                '''
-
     def check_is_inside(self):
         return self.is_inside
 
@@ -68,20 +62,33 @@ class Game():
     def complete_game(self):
         print("you have won")
 
+    def move_handler(self):
+        current_tile = self.tiles[self.current_index]
+        # TODO add and there are avalible tiles in list
+        if current_tile.exits != 0:
+            # TODO draw tile
+
+        # TODO add and there are avalible tiles in list
+        elif current_tile.exits == 0:
+            # TODO work out how to handle this
+
+        # TODO add and there are no avalible tiles in list
+
+
     def draw_dev_card(self):
         print("dev card drawn")
 
-    # FIXME not getting tile correctly
-    # TODO get the last index of placed tile
     def draw_tile(self):
         current_tile = self.tiles[self.current_index]
         current_tile_num = current_tile.tile_num
+
+        # TODO get first not placed tile
         self.current_index += 1
 
         new_tile = self.tiles[self.current_index]
         new_tile.prev_tile_num = current_tile_num
         new_tile.set_is_placed()
-
+        new_tile.exits(new_tile.exits - 1)
 
     def reshuffle(self):
         self.time += 1
