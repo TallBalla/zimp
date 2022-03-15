@@ -7,19 +7,35 @@ class Game():
         self.tiles = tiles
         self.time = 9
 
+    def get_current_tile_name(self):
+        return f'''{self.tiles[self.current_index].tile_name}
+                    current tile num {self.tiles[self.current_index].tile_num}
+                    previous tile num {self.tiles[self.current_index].prev_tile_num}
+                '''
+
     def check_is_inside(self):
         return self.is_inside
 
+    def find_prev_tile(self, tile_num):
+        return filter(lambda tile: tile.tile_num == tile_num, self.tiles)
+
     def runaway(self):
-        # TODO ask what room a player wants to run into
+        """Player can only run into the previous room when running away"""
+
+        # TODO check if there are zombies in the room
         self.player.runaway()
+                
+        tile = self.tiles[self.current_index]
+        prev_tile_num = tile.prev_tile_num
+        new_tile = next(self.find_prev_tile(prev_tile_num))
+        self.current_index = self.tiles.index(new_tile)
 
     def cower(self):
-        # TODO discard devcard from the deak for the round
+        # TODO discard devcard from the deak for 
         self.player.cower()
 
     def exterior_door_handler(self):
-        # TODO switch list to ouside 
+        # TODO switch list to ouside list
         self.is_inside = not self.is_inside
 
     def health_increase_handler(self):
@@ -55,17 +71,17 @@ class Game():
     def draw_dev_card(self):
         print("dev card drawn")
 
+    # FIXME not getting tile correctly
+    # TODO get the last index of placed tile
     def draw_tile(self):
-        current_tile = tile_list[self.current_index]
-
-        new_tile = tile_list[self.current_index + 1]
-
-        new_tile.prev_tile_num = current_tile.tile_num
-        print(new_tile.tile_name, new_tile.prev_tile_num)
-
-        self.tile_prop_handler(new_tile)
+        current_tile = self.tiles[self.current_index]
+        current_tile_num = current_tile.tile_num
         self.current_index += 1
+
+        new_tile = self.tiles[self.current_index]
+        new_tile.prev_tile_num = current_tile_num
+        new_tile.set_is_placed()
+
 
     def reshuffle(self):
         self.time += 1
-

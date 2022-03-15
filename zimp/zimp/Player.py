@@ -1,7 +1,10 @@
 from functools import partial
 from Item import Item
+from View import View
 
 class Player():
+    view = View()
+
     def __init__(self, user_name):
         self._item_one = None
         self._item_two = None
@@ -33,17 +36,21 @@ class Player():
         self._item_two = new_item
         self.item_prop_handler(new_item)
 
+    def check_item_none(self, item):
+        return item is None
+
     def cower(self):
-        # TODO remove card from stack
         self.health += 3
         
     def runaway(self):
-        if self.item_one.get_item_name() == "Oil" or self.item_two.get_item_name() == "Oil":
-               # TODO check if the player wantes to use oil
-               return
-        # TODO there will be a method in the game class
-        # allowing a player to go back a tile
         self.health -= 1
+
+        if self.check_item_none(self.item_one) or self.check_item_none(self.item_two):
+            return
+
+        if self.item_one.get_item_name() is None or self.item_two.get_item_name() is None:
+            if self.view.check_use_item("Oil"):
+                return 
 
     def remove_item_handler(self, item):
         self.item_prop_handler(item)
@@ -67,6 +74,12 @@ class Player():
     def remove_health(self, health):
         self.health -= health
 
+    def get_player_health(self):
+        return self.health
+
+    def get_player_attack(self):
+        return self.attack
+
     def check_item_uses(self, item):
         return item.get_use_item() == 0
 
@@ -87,20 +100,20 @@ class Player():
         add_props.get(item.get_item_prop(), None)()
 
 # TODO remove this only tester code
-player = Player("hello")
-item1 = Item(False, "hammer", "add attack 1", 3)
-item2 = Item(False, "hammer", "add health", 3)
+#player = Player("hello")
+#item1 = Item(False, "hammer", "add attack 1", 3)
+#item2 = Item(False, "hammer", "add health", 3)
 
-player.item_one = item1
-print(player.attack)
-print(player.health)
-print(player.item_one.get_item_prop())
+#player.item_one = item1
+#print(player.attack)
+#print(player.health)
+#print(player.item_one.get_item_prop())
 
-print()
+#print()
 
-player.item_one = item2
-print(player.attack)
-print(player.health)
-print(player.item_one.get_item_prop())
+#player.item_one = item2
+#print(player.attack)
+#print(player.health)
+#print(player.item_one.get_item_prop())
 
 

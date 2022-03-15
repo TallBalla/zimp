@@ -1,5 +1,6 @@
 from Game import Game
 from Tile import Tile
+from Player import Player
 import random
 
 
@@ -70,5 +71,18 @@ if __name__ == "__main__":
     setup = SetUp()
     setup.gen_tile_list()
 
-    game = Game(setup.get_tiles(), "hello")
+    player = Player("hello")
+    
+
+    game = Game(setup.get_tiles(), player)
+    print(game.get_current_tile_name())
     game.draw_tile()
+    print(game.get_current_tile_name())
+    game.draw_tile()
+    print(game.get_current_tile_name())
+    game.runaway()
+    print(game.get_current_tile_name())    
+    game.runaway()
+    print(game.get_current_tile_name())
+    game.draw_tile()
+    print(game.get_current_tile_name())
