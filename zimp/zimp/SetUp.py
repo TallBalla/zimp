@@ -50,6 +50,7 @@ class SetUp():
 
         # These tiles need to be at the start of each list
         start_tile = Tile(1, True,  None, "Foyer", None)
+        start_tile.set_is_placed()
         self.insert_tile(0, start_tile)
         #enter_outside_tile = Tile(3, "Patio", None, False)
         #self.insert_tile(1, enter_outside_tile)
@@ -75,14 +76,23 @@ if __name__ == "__main__":
     
 
     game = Game(setup.get_tiles(), player)
+
+    print(f'started in: {game.check_current_tile_name()}')
     
+
     game.draw_tile()
-    
+    print(game.check_current_tile_name())
+
     game.draw_tile()
-    
+    print(game.check_current_tile_name())
+
     game.runaway()
-    
-    game.runaway()
+    print(f'ran away: {game.check_current_tile_name()}')
+
+    game.draw_tile()
+    print(f'new room: {game.check_current_tile_name()}')    
     
     game.draw_tile()
+    print(game.check_current_tile_name())
+
     
