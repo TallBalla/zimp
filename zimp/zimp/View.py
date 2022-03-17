@@ -1,6 +1,9 @@
 class View():
     '''displays the cli for the game'''
 
+    def totem_collected_message(self):
+        print("\tTotem collected")
+
     def draw_devcard_warning(self):
         print("WARNING, INVOLES DRAWING DEVCARD")
 
@@ -60,14 +63,3 @@ class View():
         else: 
             print("Invalid Input")
             self.check_add_item(player_item, item_name)
-
-    def check_replace_item(self, player_item, item_name):
-        item_replace = input(f"Are you sure you want to replace {player_item} with {item_name} (Y/N)? ")
-        if item_replace[0].lower() == "y":
-            return True
-        elif item_replace[0].lower() == "n":
-            return False
-        else: 
-            print("Invalid Input")
-            self.check_replace_item(player_item, item_name)
-        return False

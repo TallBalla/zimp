@@ -109,29 +109,29 @@ class SetUp:
         self.add_dev_card(Item(True, 'Gasoline', 'combination', 1),
                           Event('zombie 4', '4 Zombies'),
                           Event('remove health',
-                          'You sense your impending doom\n-1 HEALTH'),
+                          'You sense your impending doom -1 HEALTH'),
                           Event('item', 'ITEM'))
 
         self.add_dev_card(Item(False, 'Board with Nails', 'add attack 1'
                           , 100), Event('item', 'ITEM'),
                           Event('zombie 4', '4 Zombies'),
                           Event('remove health',
-                          'Something icky in your mouth\n-1 HEALTH'))
+                          'Something icky in your mouth -1 HEALTH'))
 
         self.add_dev_card(Item(False, 'Machete', 'add attack 2', 100),
                           Event('zombie 4', '4 Zombies'),
                           Event('remove health',
-                          'A bat poops in your eye\n-1 HEALTH'),
+                          'A bat poops in your eye -1 HEALTH'),
                           Event('zombie 6', '6 Zombies'))
 
         self.add_dev_card(Item(False, 'Grisly Femur', 'add attack 1',
                           100), Event('item', 'ITEM'), Event('zombie 5'
                           , '5 Zombies'), Event('remove health',
-                          'Your soul isnt wanted here\n-1 HEALTH'))
+                          'Your soul isnt wanted here -1 HEALTH'))
 
         self.add_dev_card(Item(False, 'Goal Club', 'add attack 1',
                           100), Event('remove health',
-                          'Slip on nasty goo\n-1 HEALTH'),
+                          'Slip on nasty goo -1 HEALTH'),
                           Event('zombie 4', '4 Zombies'), Event(None,
                           'The smell of blood is in The air'))
 
@@ -142,14 +142,14 @@ class SetUp:
 
         self.add_dev_card(Item(False, 'Can of Soda', 'add health', 1),
                           Event('add health',
-                          'Candybar in you pocket\n+1 HEALTH'),
+                          'Candybar in you pocket +1 HEALTH'),
                           Event('item', 'ITEM'), Event('zombie 4',
                           '4 Zombies'))
 
         self.add_dev_card(Item(True, 'Candle', 'combination', 1),
                           Event(None, 'Your body shivers involuntarily'
                           ), Event('add health',
-                          'You feel a spark of hope\n+1 HEALTH'),
+                          'You feel a spark of hope +1 HEALTH'),
                           Event('zombie 4', '4 Zombies'))
         
         random.shuffle(self.dev_cards)
@@ -185,11 +185,13 @@ if __name__ == '__main__':
 
     game = Game(player, setup.get_inside_tiles(), setup.get_dev_cards())
 
-    game.move_handler()
+    game.draw_tile_handler()
 
-    game.move_handler()
+    game.draw_tile_handler()
 
-    game.move_handler()
+    game.cower()
 
-    game.move_handler()
+    game.draw_tile_handler()
+
+    game.draw_tile_handler()
 
