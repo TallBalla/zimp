@@ -36,8 +36,13 @@ class Player():
         self._item_two = new_item
         self.item_prop_handler(new_item)
 
-    def check_item_none(self, item):
-        return item is None
+    def check_item_one_none(self):
+        return self.item_one is None
+    
+    def check_item_two_none(self):
+        return self.item_two is None
+
+
 
     def cower(self):
         self.health += 3
@@ -45,12 +50,11 @@ class Player():
     def runaway(self):
         self.health -= 1
 
-        if self.check_item_none(self.item_one) or self.check_item_none(self.item_two):
+        if self.check_item_one_none() or self.check_item_two_none():
             return
 
-        if self.item_one.get_item_name() is None or self.item_two.get_item_name() is None:
-            if self.view.check_use_item("Oil"):
-                return 
+        if self.view.check_use_item("Oil"):
+            return 
 
     def remove_item_handler(self, item):
         self.item_prop_handler(item)
@@ -64,7 +68,8 @@ class Player():
 
     def add_attack(self, item_attack):
         self.attack += item_attack
-
+    
+    # FIX ME
     def add_health(self, health):
         self.health += health
 
@@ -86,32 +91,14 @@ class Player():
     # Got partial idea from here 
     # https://stackoverflow.com/questions/36648887/python-switch-case-allowing-optional-arguments
     def item_prop_handler(self, item):
-        """ handles all the checks for the tile properties
-        to see if they have any special characterics """
+        if item.get_item_prop() is None:
+            return
+
         add_props = {
             "add attack 1": partial(self.add_attack, 1),
             "add attack 2": partial(self.add_attack, 2),
-            "add health": partial(self.add_health, 1),
+            "add health": partial(self.add_health, 2),
             "combination": self.combination_handler,
             }
 
         add_props.get(item.get_item_prop(), None)()
-
-# TODO remove this only tester code
-#player = Player("hello")
-#item1 = Item(False, "hammer", "add attack 1", 3)
-#item2 = Item(False, "hammer", "add health", 3)
-
-#player.item_one = item1
-#print(player.attack)
-#print(player.health)
-#print(player.item_one.get_item_prop())
-
-#print()
-
-#player.item_one = item2
-#print(player.attack)
-#print(player.health)
-#print(player.item_one.get_item_prop())
-
-

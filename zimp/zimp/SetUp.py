@@ -1,98 +1,195 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from DevCard import DevCard
+from Event import Event
 from Game import Game
-from Tile import Tile
+from Item import Item
 from Player import Player
+from Tile import Tile
 import random
 
 
-class SetUp():
-    def __init__(self):
-        self.dev_cards = []
-        self.tiles = []
+class SetUp:
 
-    def add_tile(self, exits_aval, is_inside, tile_desc, tile_name, tile_prop):
-        """ adds tile to list """
-        new_tile = Tile(exits_aval, is_inside, tile_desc, tile_name, tile_prop)
-        self.tiles.append(new_tile)
+    dev_cards = []
+    inside_tiles = []
+    outside_tiles = []
 
-    def insert_tile(self, index, tile):
+    def add_inside_tile(
+        self,
+        exits_aval,
+        tile_desc,
+        tile_name,
+        tile_prop,
+        ):
+        """Adds tile to list """
+
+        new_tile = Tile(exits_aval, tile_desc, tile_name, tile_prop)
+        self.inside_tiles.append(new_tile)
+
+    def add_outside_tile(
+        self,
+        exits_aval,
+        tile_desc,
+        tile_name,
+        tile_prop,
+        ):
+        """Adds tile to list """
+
+        new_tile = Tile(exits_aval, tile_desc, tile_name, tile_prop)
+        self.outside_tiles.append(new_tile)
+
+    def add_dev_card(
+        self,
+        item,
+        event_one,
+        event_two,
+        event_three,
+        ):
+        """Adds dev card to list"""
+
+        new_dev_card = DevCard(item, event_one, event_two, event_three)
+        self.dev_cards.append(new_dev_card)
+
+    def insert_inside_tile(self, index, tile):
         """ inserts the tile at any index """
-        self.tiles.insert(index, tile)
 
-    def gen_tile_list(self):
-        """ creates the tiles for the game """
-        # Outside tiles
-        #self.add_tile(3, "Garden", "+1 Health if end turn here.", False)
-        #self.add_tile(3, "Sitting Area", None, False)
-        #self.add_tile(3, "Yard", None, False)
-        #self.add_tile(3, "Yard", None, False)
-        #self.add_tile(3, "Yard", None, False)
-        #self.add_tile(2, "Graveyard",
-        #              "Resolve a new card to bury totem", False)
-        #self.add_tile(2, "Garage", None, False)
+        self.inside_tiles.insert(index, tile)
 
-        # Inside tiles
-        self.add_tile(1, True, None, "Bathroom", None)
-        self.add_tile(3, True,
-                      "+1 Health if end turn here.",
-                      "Kitchen", "health increase")
-        self.add_tile(1, True, 
-                      "May draw a new card to find an item.", 
-                      "Storage", "item")
-        self.add_tile(2, True, 
-                      "Resolve a new card to find totem",
-                      "Evil Temple", "totem")
-        self.add_tile(3, True, None,  "Family Room",  None)
-        self.add_tile(4, True,  None, "Dinning Room", "exterior door")
+    def insert_outside_tile(self, index, tile):
+        """ inserts the tile at any index """
 
-        self.add_tile(2, True, None, "Bed Room", None)
+        self.outside_tiles.insert(index, tile)
 
-        random.shuffle(self.tiles)
+    def gen_outside_tiles(self):
 
-        # These tiles need to be at the start of each list
-        start_tile = Tile(1, True,  None, "Foyer", None)
-        start_tile.set_is_placed()
-        self.insert_tile(0, start_tile)
-        #enter_outside_tile = Tile(3, "Patio", None, False)
-        #self.insert_tile(1, enter_outside_tile)
+        self.add_outside_tile(3, '+1 Health if end turn here.', 'Garden', 'health increase')
+        self.add_outside_tile(3, None, 'Sitting Area', None)
+        self.add_outside_tile(3, None, 'Yard', None)
+        self.add_outside_tile(3, None, 'Yard', None)
+        self.add_outside_tile(3, None, 'Yard', None)
+        self.add_outside_tile(2, 'Resolve a new card to bury totem',
+                              'Graveyard', 'totem bural')
+        self.add_outside_tile(2, None, 'Garage', None)
+
+        random.shuffle(self.outside_tiles)
+
+        enter_outside_tile = Tile(3, None, 'Patio', 'totem bural')
+        self.insert_outside_tile(1, enter_outside_tile)
+
         # Generates the ids for the tiles so other tiles can refrance them
-        self.gen_tile_index()
+
+    def gen_inside_tiles(self):
+        """ creates the tiles for the game """
+
+        self.add_inside_tile(1, None, 'Bathroom', None)
+        self.add_inside_tile(3, '+1 Health if end turn here.', 'Kitchen'
+                             , 'health increase')
+        self.add_inside_tile(1, 'May draw a new card to find an item.',
+                             'Storage', 'item')
+        self.add_inside_tile(2, 'Resolve a new card to find totem',
+                             'Evil Temple', 'totem')
+        self.add_inside_tile(3, None, 'Family Room', None)
+        self.add_inside_tile(4, None, 'Dinning Room', 'exterior door')
+
+        self.add_inside_tile(2, None, 'Bed Room', None)
+
+        random.shuffle(self.inside_tiles)
+
+        start_tile = Tile(1, None, 'Foyer', None)
+        start_tile.set_is_placed()
+        self.insert_inside_tile(0, start_tile)
+
+    def gen_dev_cards(self):
+        self.add_dev_card(Item(True, 'Oil', 'combination', 1),
+                          Event(None, 'You try hard not to wet yourself'
+                          ), Event('item', 'ITEM'), Event('zombie 6',
+                          '6 Zombies'))
+
+        self.add_dev_card(Item(True, 'Gasoline', 'combination', 1),
+                          Event('zombie 4', '4 Zombies'),
+                          Event('remove health',
+                          'You sense your impending doom\n-1 HEALTH'),
+                          Event('item', 'ITEM'))
+
+        self.add_dev_card(Item(False, 'Board with Nails', 'add attack 1'
+                          , 100), Event('item', 'ITEM'),
+                          Event('zombie 4', '4 Zombies'),
+                          Event('remove health',
+                          'Something icky in your mouth\n-1 HEALTH'))
+
+        self.add_dev_card(Item(False, 'Machete', 'add attack 2', 100),
+                          Event('zombie 4', '4 Zombies'),
+                          Event('remove health',
+                          'A bat poops in your eye\n-1 HEALTH'),
+                          Event('zombie 6', '6 Zombies'))
+
+        self.add_dev_card(Item(False, 'Grisly Femur', 'add attack 1',
+                          100), Event('item', 'ITEM'), Event('zombie 5'
+                          , '5 Zombies'), Event('remove health',
+                          'Your soul isnt wanted here\n-1 HEALTH'))
+
+        self.add_dev_card(Item(False, 'Goal Club', 'add attack 1',
+                          100), Event('remove health',
+                          'Slip on nasty goo\n-1 HEALTH'),
+                          Event('zombie 4', '4 Zombies'), Event(None,
+                          'The smell of blood is in The air'))
+
+        self.add_dev_card(Item(True, 'Chainsaw', 'combination', 2),
+                          Event('zombie 3', '3 Zombies'), Event(None,
+                          'You hear terrible screams'), Event('zombie 5'
+                          , '5 Zombies'))
+
+        self.add_dev_card(Item(False, 'Can of Soda', 'add health', 1),
+                          Event('add health',
+                          'Candybar in you pocket\n+1 HEALTH'),
+                          Event('item', 'ITEM'), Event('zombie 4',
+                          '4 Zombies'))
+
+        self.add_dev_card(Item(True, 'Candle', 'combination', 1),
+                          Event(None, 'Your body shivers involuntarily'
+                          ), Event('add health',
+                          'You feel a spark of hope\n+1 HEALTH'),
+                          Event('zombie 4', '4 Zombies'))
+        
+        random.shuffle(self.dev_cards)
 
     def gen_tile_index(self):
-        for i in range(len(self.tiles)):
-            self.tiles[i].tile_num = i
+        for i in range(len(self.inside_tiles)):
+            self.inside_tiles[i].tile_num = i
+            self.outside_tiles[i].tile_num = i
 
-    def get_tiles(self):
-        """ gets the tile list """
-        return self.tiles
+    def get_dev_cards(self):
+        """Gets the dev card list"""
+
+        return self.dev_cards
+
+    def get_inside_tiles(self):
+        """Gets the tile list """
+
+        return self.inside_tiles
+
+    def get_outside_tiles(self):
+        return self.outside_tiles
 
 
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     setup = SetUp()
-    setup.gen_tile_list()
+    setup.gen_inside_tiles()
+    setup.gen_outside_tiles()
+    setup.gen_dev_cards()
 
-    player = Player("hello")
-    
+    setup.gen_tile_index()
 
-    game = Game(setup.get_tiles(), player)
+    player = Player('hello')
 
-    print(f'started in: {game.check_current_tile_name()}')
-    
+    game = Game(player, setup.get_inside_tiles(), setup.get_dev_cards())
 
-    game.draw_tile()
-    print(game.check_current_tile_name())
+    game.move_handler()
 
-    game.draw_tile()
-    print(game.check_current_tile_name())
+    game.move_handler()
 
-    game.runaway()
-    print(f'ran away: {game.check_current_tile_name()}')
+    game.move_handler()
 
-    game.draw_tile()
-    print(f'new room: {game.check_current_tile_name()}')    
-    
-    game.draw_tile()
-    print(game.check_current_tile_name())
+    game.move_handler()
 
-    

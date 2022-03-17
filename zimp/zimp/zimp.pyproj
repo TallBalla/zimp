@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DevCard.py" />
+    <Compile Include="Event.py" />
     <Compile Include="Game.py" />
     <Compile Include="Item.py" />
     <Compile Include="SetUp.py" />

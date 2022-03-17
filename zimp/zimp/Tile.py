@@ -1,9 +1,8 @@
 class Tile():
-    def __init__(self, exits_aval, is_inside, tile_desc, tile_name, tile_prop):
+    def __init__(self, exits_aval, tile_desc, tile_name, tile_prop):
         self._exits_aval = exits_aval
         self._prev_tile_num = 0
         self._tile_num = 0
-        self.is_inside = is_inside
         self.is_placed = False
         self.tile_desc = tile_desc
         self.tile_name = tile_name
@@ -18,7 +17,7 @@ class Tile():
     @exits.setter
     def exits(self, new_exit_num):
         """Sets the number of exits avalible"""
-        self.exits = new_exit_num
+        self._exits_aval = new_exit_num
 
     # Tile number or id,
     # it helps ditermine what the tile.
@@ -54,10 +53,9 @@ class Tile():
         """Sets a tile to display it has been placed"""
         self.is_placed = True
 
-    # Gets tile location in terms of the game.
-    def get_is_inside(self):
-        """Gets information about weather a tile is inside or not"""
-        return self.is_inside
+    def get_tile_name(self):
+        """Gets the name of the tile"""
+        return self.tile_name
 
     def get_tile_prop(self):
         """Gets the tile properties so actions can be performed when tile placed"""
