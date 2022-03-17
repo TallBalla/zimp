@@ -48,6 +48,7 @@ class Player():
         self.health += 3
         
     def runaway(self):
+        print("!!!run away!!!")
         self.health -= 1
 
         if self.check_item_one_none() or self.check_item_two_none():
@@ -77,6 +78,7 @@ class Player():
         self.attack -= attack
 
     def remove_health(self, health):
+        print("!!! remove health!!!")
         self.health -= health
 
     def get_player_health(self):

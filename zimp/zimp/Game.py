@@ -51,14 +51,14 @@ class Game:
     # FIX ME
     def health_increase_handler(self):
         """Increases the players health by 1"""
-
+        print("health_increase_handler")
         health = 1
         self.player.add_health(health)
 
     # TODO add break through method
     def zombie_door(self):
         self.view.zombie_door_warning()
-        self.zombie_attack(3, False)
+        self.zombie_attack(3, True)
         self.draw_tile_handler()
         self.draw_dev_card(False)
 
@@ -83,6 +83,7 @@ class Game:
                             item):
                         return
                 self.player.item_one = item
+                return
             elif self.view.check_add_item('Item Two', item.get_item_name()):
 
                 if not self.player.check_item_two_none():
@@ -90,6 +91,7 @@ class Game:
                             item):
                         return
                 self.player.item_two = item
+                return
 
     def totem_handler(self):
         if self.has_totem:
@@ -124,19 +126,21 @@ class Game:
             }
         props.get(tile.get_tile_prop(), None)()
     
-    def zombie_attack(self, zombies, runaway):
+    def zombie_attack(self, zombies, zombie_door):
 
         player_attack = self.player.get_player_attack()
         damage = player_attack  - zombies
-
-        if damage < 0:
-            self.player.remove_health(abs(damage))
-
-        if not runaway:
+        if zombie_door:
+            if damage < 0:
+                self.player.remove_health(abs(damage))
             return
 
         if self.view.check_player_runaway(damage, zombies):
             self.runaway()
+            return
+
+        if damage < 0:
+            self.player.remove_health(abs(damage))
 
 
     def event_prop_handler(self, dev_card):
@@ -147,10 +151,10 @@ class Game:
             return
 
         props = {
-            'zombie 3': partial(self.zombie_attack, 3, True),
-            'zombie 4': partial(self.zombie_attack, 4, True),
-            'zombie 5': partial(self.zombie_attack, 5, True),
-            'zombie 6': partial(self.zombie_attack, 6, True),
+            'zombie 3': partial(self.zombie_attack, 3, False),
+            'zombie 4': partial(self.zombie_attack, 4, False),
+            'zombie 5': partial(self.zombie_attack, 5, False),
+            'zombie 6': partial(self.zombie_attack, 6, False),
             'add health': self.health_increase_handler,
             'remove health': partial(self.player.remove_health, 1),
             'item': self.item_handler, 
@@ -172,12 +176,13 @@ class Game:
     def runaway(self):
         """Player can only run into the previous room when running away"""
 
-        self.player.runaway()
 
         tile = self.tiles[self.current_index]
         prev_tile_num = tile.prev_tile_num
         new_tile = self.find_prev_tile(prev_tile_num)
         self.current_index = self.tiles.index(new_tile)
+
+        self.player.runaway()
 
     def cower(self):
         """Allows a player to gain health"""
@@ -191,9 +196,11 @@ class Game:
 
     def move_handler(self):
         """Performs a sequence of actions when a player wants to move around the game"""
-        print("Entering new room")
-
         current_tile = self.tiles[self.current_index]
+        print(f"\nCurrent Tile : {current_tile.get_tile_name()}")
+        print(f"Player Health: {self.player.get_player_health()}")
+        print(f"Player Attack: {self.player.get_player_attack()}")
+
 
         if current_tile.exits != 0 and self.check_aval_tile_count():
             self.draw_tile_handler()
@@ -201,7 +208,6 @@ class Game:
             return
         elif self.check_total_exits() \
             and self.check_aval_tile_count():
-
             self.zombie_door()
             return
 
@@ -211,7 +217,6 @@ class Game:
         """Draws the next avalible dev card in the pile"""
 
         self.dev_card_index += 1
-        print(self.dev_card_index)
         dev_card = self.dev_cards[self.dev_card_index]
 
         if self.dev_card_index == len(self.dev_cards):
