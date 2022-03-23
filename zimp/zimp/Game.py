@@ -13,13 +13,18 @@ class Game:
     dev_card_index = 1
     has_totem = False
     is_inside = True
+    saved_inside_index = 0
+    saved_outside_index = 0
     time = 9
     view = View()
 
-    def __init__(self, player, tiles, dev_cards):
+    def __init__(self, player, dev_cards ,inside_tiles ,outside_tile):
         self.player = player
         self.dev_cards = dev_cards
-        self.tiles = tiles
+        self.inside_tiles = inside_tiles
+        self.outside_tiles = outside_tile
+        self.tiles = inside_tiles
+
 
     # ----------------- !!!! Checkers !!!! -----------------
 
@@ -40,6 +45,18 @@ class Game:
         """Checks if there are exits new tiles can be placed to"""
 
         return self.get_total_exit() == 0
+
+    # ----------------- !!!! Setters !!!! -----------------
+
+    def set_tiles_inside(self):
+        self.outside_tiles = self.tiles
+        self.tiles = self.inside_tiles
+        self.current_index = self.saved_inside_index
+
+    def set_tiles_outside(self):
+        self.inside_tiles = self.tiles
+        self.tiles = self.outside_tiles
+        self.current_index = self.saved_outside_index
 
     # ----------------- !!!! Getters/Finders !!!! -----------------
 
@@ -152,8 +169,16 @@ class Game:
             self.reshuffle()
             self.draw_dev_card()
         
+        print(self.current_index)
+        print(self.saved_inside_index)
+        print(self.saved_outside_index)
+
         self.tile_prop_handler(new_tile)
 
+        print(self.outside_tiles[self.saved_inside_index].get_tile_name())
+        print(self.current_index)
+        print(self.saved_inside_index)
+        print(self.saved_outside_index)
 
     def event_prop_handler(self, event):
         
@@ -172,9 +197,13 @@ class Game:
         props.get(event.get_event_prop(), None)()
 
     def exterior_door_handler(self):
-        # TODO switch list to ouside list
-
         self.is_inside = not self.is_inside
+
+        if self.is_inside:
+            self.set_tiles_inside()
+            return
+
+        self.set_tiles_outside()
 
     def health_increase_handler(self):
         """Increases the players health by 1"""

@@ -74,8 +74,15 @@ class SetUp:
 
         random.shuffle(self.outside_tiles)
 
-        enter_outside_tile = Tile(3, None, 'Patio', 'totem bural')
-        self.insert_outside_tile(1, enter_outside_tile)
+
+        enter_outside_tile = Tile(3, None, 'Patio', 'exterior door')
+        enter_outside_tile.set_is_placed()
+        self.insert_outside_tile(0, enter_outside_tile)
+        
+        
+        for i in self.outside_tiles:
+            print(i.get_tile_name())
+
 
         # Generates the ids for the tiles so other tiles can refrance them
 
@@ -183,7 +190,7 @@ if __name__ == '__main__':
 
     player = Player('hello')
 
-    game = Game(player, setup.get_inside_tiles(), setup.get_dev_cards())
+    game = Game(player , setup.get_dev_cards(), setup.get_inside_tiles(), setup.get_outside_tiles())
 
     game.draw_tile_handler()
 
