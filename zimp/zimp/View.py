@@ -1,6 +1,16 @@
 class View():
     '''displays the cli for the game'''
 
+    def get_user_name(self):
+        user_name = input("Please enter user name: ")
+        return user_name
+
+    def tile_display(self, tile):
+        print("TILE")
+        print(tile.get_tile_description())
+        #print(f"Tile Name: {tile.get_tile_name()}")
+        #print(f"Tile Description: {tile.get_tile_name()}")
+
     def totem_collected_message(self):
         print("\tTotem collected")
 

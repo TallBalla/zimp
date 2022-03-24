@@ -69,7 +69,6 @@ class Player():
     def add_attack(self, item_attack):
         self.attack += item_attack
     
-    # FIX ME
     def add_health(self, health):
         self.health += health
 

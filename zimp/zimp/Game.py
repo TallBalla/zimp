@@ -5,26 +5,24 @@ from functools import partial, partialmethod
 from View import View
 import random
 
-# FIX ME Bed room not working correclty
-# Check how exits are handled
 
 class Game:
     current_index = 0
     dev_card_index = 1
     has_totem = False
     is_inside = True
+    is_totem_buried = False
     saved_inside_index = 0
     saved_outside_index = 0
     time = 9
     view = View()
 
-    def __init__(self, player, dev_cards ,inside_tiles ,outside_tile):
+    def __init__(self, player, dev_cards, inside_tiles, outside_tile):
         self.player = player
         self.dev_cards = dev_cards
         self.inside_tiles = inside_tiles
         self.outside_tiles = outside_tile
         self.tiles = inside_tiles
-
 
     # ----------------- !!!! Checkers !!!! -----------------
 
@@ -39,7 +37,7 @@ class Game:
         return self.is_inside
 
     def check_current_room_evil_temple(self):
-       return self.get_current_tile_name == 'totem'
+        return self.get_current_tile_name == 'totem'
 
     def check_total_exits(self):
         """Checks if there are exits new tiles can be placed to"""
@@ -52,11 +50,13 @@ class Game:
         self.outside_tiles = self.tiles
         self.tiles = self.inside_tiles
         self.current_index = self.saved_inside_index
+        return self.is_inside
 
     def set_tiles_outside(self):
         self.inside_tiles = self.tiles
         self.tiles = self.outside_tiles
         self.current_index = self.saved_outside_index
+        return self.is_inside
 
     # ----------------- !!!! Getters/Finders !!!! -----------------
 
@@ -74,7 +74,10 @@ class Game:
 
     def get_current_tile_name(self):
         return self.tiles[self.current_index].tile_name
-    
+
+    def get_is_totem_buried(self):
+        return self.is_totem_buried
+
     def get_next_tile_name(self):
         """Returns the tile name of the next tile"""
 
@@ -89,15 +92,11 @@ class Game:
     def complete_game(self):
         """Performs a sequence of actions when the player completes the game"""
 
-        print('you have won')
-
     def cower(self):
         """Allows a player to gain health"""
-
-        print("\ncowering")
         self.dev_card_index += 1
         self.player.cower()
-
+        return self.player
 
     def draw_dev_card(self):
         """Draws the next avalible dev card in the pile"""
@@ -105,17 +104,15 @@ class Game:
         self.dev_card_index += 1
         dev_card = self.dev_cards[self.dev_card_index]
         event = dev_card.get_card_event(self.time)
-
-        print("DEV CARD")
-        print(f"\tTime: {self.time} PM")
-        print(f"\tDev Card Property: {event.get_event_desc()}")
-
         self.event_prop_handler(event)
+
+        return event
 
     def reshuffle(self):
         self.time += 1
         self.dev_card_index = 1
         random.shuffle(self.dev_cards)
+        return self.time
 
     def runaway(self):
         """Player can only run into the previous room when running away"""
@@ -127,8 +124,10 @@ class Game:
 
         self.player.runaway()
 
+        return self.player
+
     # ----------------- !!!! Zombie Actions !!!! -----------------
-    
+
     def zombie_door(self):
         self.view.zombie_door_warning()
         self.zombie_attack_handler(3, True)
@@ -137,7 +136,8 @@ class Game:
     # ----------------- !!!! Handlers !!!! -----------------
 
     def draw_tile_handler(self):
-        """Preforms a sequence of actions when the player want to draw a new tile"""
+        """Preforms a sequence of actions when the
+        player want to draw a new tile"""
         # Handles current tile
         current_tile = self.tiles[self.current_index]
         current_tile_num = current_tile.tile_num
@@ -154,34 +154,21 @@ class Game:
         new_tile.set_is_placed()
         new_tile.exits -= 1
 
-        print("\nTILE")
-        print(f"\tCurrent Tile : {new_tile.tile_name}")
-        print(f"\tTile Property: {new_tile.tile_desc}")
-        print(f"\tPlayer Health: {self.player.get_player_health()}")
-        print(f"\tPlayer Attack: {self.player.get_player_attack()}")
-
         if self.check_total_exits() and self.check_aval_tile_count():
             self.zombie_door()
-            return
+            return 'zombie door'
 
         if self.dev_card_index == len(self.dev_cards):
             self.view.shuffle_dev_card_warning()
             self.reshuffle()
             self.draw_dev_card()
-        
-        print(self.current_index)
-        print(self.saved_inside_index)
-        print(self.saved_outside_index)
 
         self.tile_prop_handler(new_tile)
 
-        print(self.outside_tiles[self.saved_inside_index].get_tile_name())
-        print(self.current_index)
-        print(self.saved_inside_index)
-        print(self.saved_outside_index)
+        return new_tile
 
     def event_prop_handler(self, event):
-        
+
         if event.get_event_prop() is None:
             return
 
@@ -192,9 +179,11 @@ class Game:
             'zombie 6': partial(self.zombie_attack_handler, 6, False),
             'add health': self.health_increase_handler,
             'remove health': partial(self.player.remove_health, 1),
-            'item': self.item_handler, 
+            'item': self.item_handler,
             }
         props.get(event.get_event_prop(), None)()
+
+        return event
 
     def exterior_door_handler(self):
         self.is_inside = not self.is_inside
@@ -205,10 +194,14 @@ class Game:
 
         self.set_tiles_outside()
 
+        return self.tiles
+
     def health_increase_handler(self):
         """Increases the players health by 1"""
         health = 1
         self.player.add_health(health)
+
+        return self.player.get_player_health()
 
     def item_handler(self):
         """Draws a devcard and see if player wants the time"""
@@ -217,7 +210,7 @@ class Game:
         if self.view.check_draw_devcard():
 
             self.dev_card_index += 1
-            
+
             dev_card = self.dev_cards[self.dev_card_index]
             item = dev_card.get_card_item()
 
@@ -227,6 +220,8 @@ class Game:
             elif self.view.check_add_item('Item Two', item.get_item_name()):
                 self.player.item_two = item
                 return
+
+            return item
 
     def tile_prop_handler(self, tile):
         """ handles all the checks for the tile properties
@@ -244,12 +239,15 @@ class Game:
             }
         props.get(tile.get_tile_prop(), None)()
 
+        return tile
+
     def totem_bural_handler(self):
         if self.has_totem:
             self.complete_game()
             return
 
         self.view.no_totem_warning()
+
         # TODO print player doesnt have the totem
 
     def totem_handler(self):
@@ -259,14 +257,16 @@ class Game:
         self.has_totem = True
         self.view.totem_collected_message()
 
+        return self.has_totem
+
     def zombie_attack_handler(self, zombies, zombie_door):
 
         player_attack = self.player.get_player_attack()
-        damage = player_attack  - zombies
+        damage = player_attack - zombies
         if zombie_door or self.check_current_room_evil_temple():
             if damage < 0:
                 self.player.remove_health(abs(damage))
-            return
+            return zombies
 
         if self.view.check_player_runaway(damage, zombies):
             self.runaway()

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c15d9bc5-7889-477c-b6b0-086827a1dd91</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>SetUp.py</StartupFile>
+    <StartupFile>Main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,10 +22,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controller.py" />
     <Compile Include="DevCard.py" />
     <Compile Include="Event.py" />
     <Compile Include="Game.py" />
     <Compile Include="Item.py" />
+    <Compile Include="Main.py" />
     <Compile Include="SetUp.py" />
     <Compile Include="Player.py" />
     <Compile Include="Tile.py" />

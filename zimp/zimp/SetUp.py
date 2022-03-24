@@ -76,15 +76,7 @@ class SetUp:
 
 
         enter_outside_tile = Tile(3, None, 'Patio', 'exterior door')
-        enter_outside_tile.set_is_placed()
         self.insert_outside_tile(0, enter_outside_tile)
-        
-        
-        for i in self.outside_tiles:
-            print(i.get_tile_name())
-
-
-        # Generates the ids for the tiles so other tiles can refrance them
 
     def gen_inside_tiles(self):
         """ creates the tiles for the game """
@@ -180,25 +172,4 @@ class SetUp:
         return self.outside_tiles
 
 
-if __name__ == '__main__':
-    setup = SetUp()
-    setup.gen_inside_tiles()
-    setup.gen_outside_tiles()
-    setup.gen_dev_cards()
-
-    setup.gen_tile_index()
-
-    player = Player('hello')
-
-    game = Game(player , setup.get_dev_cards(), setup.get_inside_tiles(), setup.get_outside_tiles())
-
-    game.draw_tile_handler()
-
-    game.draw_tile_handler()
-
-    game.cower()
-
-    game.draw_tile_handler()
-
-    game.draw_tile_handler()
 
