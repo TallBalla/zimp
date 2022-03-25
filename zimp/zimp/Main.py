@@ -4,4 +4,3 @@ if __name__ == '__main__':
     controller = Controller()
     controller.setup_game()
     controller.run()
-

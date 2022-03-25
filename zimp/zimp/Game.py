@@ -118,7 +118,7 @@ class Game:
         self.dev_card_index += 1
         self.player.cower()
 
-    def draw_dev_card(self):     
+    def draw_dev_card(self):
         return self.dev_cards[self.dev_card_index]
 
     def increment_dev_card_index(self):
@@ -178,7 +178,6 @@ class Game:
         if self.has_totem:
             return
         self.has_totem = True
-
 
     def zombie_attack_handler(self, zombies, zombie_door):
 
