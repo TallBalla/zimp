@@ -1,11 +1,11 @@
 class Tile():
-    def __init__(self, exits_aval, tile_desc, tile_name, tile_prop):
+    def __init__(self, exits_aval, tile_name, tile_desc, tile_prop):
         self._exits_aval = exits_aval
         self._prev_tile_num = 0
         self._tile_num = 0
         self.is_placed = False
-        self.tile_desc = tile_desc
         self.tile_name = tile_name
+        self.tile_desc = tile_desc
         self.tile_prop = tile_prop
 
     # Number of exits

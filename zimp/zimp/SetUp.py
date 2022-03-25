@@ -63,39 +63,39 @@ class SetUp:
 
     def gen_outside_tiles(self):
 
-        self.add_outside_tile(3, '+1 Health if end turn here.', 'Garden', 'health increase')
-        self.add_outside_tile(3, None, 'Sitting Area', None)
-        self.add_outside_tile(3, None, 'Yard', None)
-        self.add_outside_tile(3, None, 'Yard', None)
-        self.add_outside_tile(3, None, 'Yard', None)
-        self.add_outside_tile(2, 'Resolve a new card to bury totem',
-                              'Graveyard', 'totem bural')
-        self.add_outside_tile(2, None, 'Garage', None)
+        self.add_outside_tile(3, 'Garden', '+1 Health if end turn here.', 'health increase')
+        self.add_outside_tile(3, 'Sitting Area', None,  None)
+        self.add_outside_tile(3, 'Yard', None, None)
+        self.add_outside_tile(3, 'Yard', None, None)
+        self.add_outside_tile(3, 'Yard', None, None)
+        self.add_outside_tile(2, 'Graveyard','Resolve a new card to bury totem',
+                               'totem bural')
+        self.add_outside_tile(2,'Garage', None, None)
 
         random.shuffle(self.outside_tiles)
 
 
-        enter_outside_tile = Tile(3, None, 'Patio', 'exterior door')
+        enter_outside_tile = Tile(3, 'Patio', None, 'exterior door outside')
         self.insert_outside_tile(0, enter_outside_tile)
 
     def gen_inside_tiles(self):
         """ creates the tiles for the game """
 
-        self.add_inside_tile(1, None, 'Bathroom', None)
-        self.add_inside_tile(3, '+1 Health if end turn here.', 'Kitchen'
-                             , 'health increase')
-        self.add_inside_tile(1, 'May draw a new card to find an item.',
-                             'Storage', 'item')
-        self.add_inside_tile(2, 'Resolve a new card to find totem',
-                             'Evil Temple', 'totem')
-        self.add_inside_tile(3, None, 'Family Room', None)
-        self.add_inside_tile(4, None, 'Dinning Room', 'exterior door')
+        self.add_inside_tile(1, 'Bathroom', None, None)
+        self.add_inside_tile(3,'Kitchen', '+1 Health if end turn here.', 
+                             'health increase')
+        self.add_inside_tile(1, 'Storage', 'May draw a new card to find an item.',
+                              'item')
+        self.add_inside_tile(2, 'Evil Temple', 'Resolve a new card to find totem',
+                              'totem')
+        self.add_inside_tile(3, 'Family Room', None, None)
+        self.add_inside_tile(4,'Dinning Room', None, 'exterior door inside')
 
-        self.add_inside_tile(2, None, 'Bed Room', None)
+        self.add_inside_tile(2,'Bed Room', None, None)
 
         random.shuffle(self.inside_tiles)
 
-        start_tile = Tile(1, None, 'Foyer', None)
+        start_tile = Tile(1,'Foyer', None,  None)
         start_tile.set_is_placed()
         self.insert_inside_tile(0, start_tile)
 
