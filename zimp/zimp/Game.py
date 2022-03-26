@@ -114,11 +114,11 @@ class Game:
     def get_current_tile(self):
         return self.tiles[self.current_index]
 
-    def get_connected_tiles(self):
-        current_tile = self.get_current_tile()
-        return filter(lambda tile: 
-                      current_tile.prev_tile_num == tile.tile_num,
-                      self.tiles)
+    #def get_connected_tiles(self):
+    #    current_tile = self.get_current_tile()
+    #    return filter(lambda tile: 
+    #                  current_tile.prev_tile_num == tile.tile_num,
+    #                  self.tiles)
 
     def get_event(self, dev_card):
         return dev_card.get_card_event(self.time)
@@ -136,6 +136,8 @@ class Game:
         return sum(tile.exits for tile in self.tiles
                    if tile.get_is_placed())
 
+    def get_tiles(self):
+        return self.tiles
     # ----------------- !!!! PLayer Actions !!!! -----------------
 
     def complete_game(self):

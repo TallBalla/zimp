@@ -62,15 +62,21 @@ class Controller():
             self.runaway = False
 
             # view player stats
-            self.view.display_player(self.game.get_player())
             self.view.display_drawing_tile()
+            #print()
+            #for ti in self.game.get_tiles():
+            #    print(ti.get_tile_name())
 
             tile = self.draw_tile()
 
             self.view.display_tile(tile)
 
-            for tile in self.game.get_connected_tiles():
-                print(tile.get_tile_name())
+            #for tile in self.game.get_connected_tiles():
+            #    print(tile.get_tile_name())
+
+            self.view.display_player(self.game.get_player())
+
+
 
             self.view.display_drawing_dev_card()
 
@@ -79,20 +85,17 @@ class Controller():
 
             self.view.display_event(self.game.get_time(), event)
 
-            if self.game.check_event_prop_is_not_none(event):
-                self.event_props.get(event.get_event_prop())()
-
-            if self.runaway:
-                continue
+            #if self.game.check_event_prop_is_not_none(event):
+            #    self.event_props.get(event.get_event_prop())()
 
             if self.game.check_tile_prop_is_not_none(tile):
+                print("tile prop is not none")
                 self.tile_props.get(tile.get_tile_prop())()
 
     def draw_tile(self):
 
         if self.game.check_for_zombie_door():
-            self.view.warning_zombie_door()
-            self.zombie_attack(int(3))
+            self.zombie_door_attack()
         new_tile = self.game.draw_tile()
         return new_tile
 
@@ -119,7 +122,6 @@ class Controller():
 
     def collect_item(self):
         player = self.game.get_player()
-        self.game.increment_dev_card_index()
 
         if self.game.check_avail_dev_cards():
             self.view.warning_shuffle_dev_card()
@@ -127,6 +129,7 @@ class Controller():
         self.view.display_drawing_dev_card()
 
         if self.view.check_draw_devcard():
+            self.game.increment_dev_card_index()
             item = self.game.collect_item()
 
             if self.view.check_add_item('Item One', item.get_item_name()):
@@ -180,6 +183,10 @@ class Controller():
             self.remove_health(int(1))
             return
         self.remove_health(damage_taken)
+    
+    def zombie_door_attack(self):
+        self.view.warning_zombie_door()
+
 
     def add_health(self):
         self.game.add_health(int(1))

@@ -5,40 +5,40 @@ class View():
         return input("Please enter user name: ")
 
     def display_drawing_dev_card(self):
-        print("\nDrawing Dev Card...\n")
+        print("\nDrawing Dev Card...")
 
     def display_drawing_tile(self):
-        print("\nDrawing Tile...\n")
+        print("\nDrawing Tile...")
 
     def display_player(self, player):
         print(f"h {player.get_player_health()}", end=" | ")
         print(f"d {player.get_player_attack()}")
 
     def display_event(self, time ,event):
-        print(f"{time}:00 PM")
+        print(f"\n{time}:00 PM")
         print(event.get_event_desc())
 
     def display_tile(self, tile):
-        print(tile.get_tile_name())
+        print(f"\n{tile.get_tile_name()}")
         print(tile.get_tile_description())
 
     def dsiplay_totem_collected(self):
-        print("\nTOTEM COLLECTED\n")
+        print("\nTOTEM COLLECTED")
 
     def warning_draw_devcard(self, ):
-        print(f"WARNING, INVOLES DRAWING DEVCARD\n")
+        print(f"\nWARNING, INVOLES DRAWING DEVCARD")
 
     def warning_shuffle_dev_card(self):
-        print("NO DEV CARDS AVALIBLE, SHUFFLING DEV CARDS\n")
+        print("\nNO DEV CARDS AVALIBLE, SHUFFLING DEV CARDS")
 
     def warning_no_totem(self):
-        print("NO TOTEM, FIND TOTEM TO COMPLETE GAME\n")
+        print("\nNO TOTEM, FIND TOTEM TO COMPLETE GAME")
 
     def warning_zombie_door(self):
-        print("0 EXITS AVALIBLE, CREATING ZOMBIE DOOR\n")
+        print("\n0 EXITS AVALIBLE, CREATING ZOMBIE DOOR")
 
     def check_use_item(self, item_name):
-        use_item = input(f"Do you want to use {item_name} (Y/N)? ")
+        use_item = input(f"Do you want to use {item_name} (y/n)? ")
 
         if use_item[0].lower() == "y":
             return True
@@ -49,8 +49,7 @@ class View():
             self.check_use_item(item_name)
 
     def check_draw_devcard(self):
-        devcard = input(f"Do you want to collect item (Y/N)? ")
-
+        devcard = input(f"\nDo you want to collect item (y/n)? ")
         if devcard[0].lower() == "y":
             return True
         elif devcard[0].lower() == "n":
@@ -93,11 +92,11 @@ class View():
 
     def check_player_runaway(self, zombies, damage):
         if damage <= 0:
-            print(f"{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL NOT TAKE DAMAGE")
+            print(f"\n{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL NOT TAKE DAMAGE")
         else:
-            print(f"{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL TAKE {damage} DAMAGE")
+            print(f"\n{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL TAKE {damage} DAMAGE")
 
-        runaway = input("Do you want to run away (y/n)? ")
+        runaway = input("\nDo you want to run away (y/n)? ")
         if runaway[0].lower() == "y":
             return True
         elif runaway[0].lower() == "n":
