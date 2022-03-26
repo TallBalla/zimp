@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from functools import partial
-from View import View
 import random
 
 
@@ -15,7 +14,6 @@ class Game:
     saved_inside_index = 0
     saved_outside_index = 0
     time = 9
-    view = View()
 
     def __init__(self, player, dev_cards, inside_tiles, outside_tile):
         self.player = player
@@ -57,6 +55,30 @@ class Game:
     def check_player_has_buried_totem(self):
         return self.is_totem_buried
 
+    def check_player_holds_attack_item(self):
+        items_props = map(lambda item: item.get_item_prop(),
+                          self.player.get_items())
+
+        return any('attack' in item_prop for item_prop in items_props)
+
+    def check_player_holds_health_item(self):
+        items_props = map(lambda item: item.get_item_prop(),
+                          self.player.get_items())
+        return 'health' in items_props    
+
+    def check_player_holds_special_item(self):
+        items_props = map(lambda item: item.get_item_prop(),
+                          self.player.get_items())
+        return 'special' in items_props    
+    
+    def check_item_one_uses(self):
+        item_one = self.player.item_one
+        return self.player.check_item_uses(item_one)
+
+    def check_item_two_uses(self):
+        item_two = self.player.item_two
+        return self.player.check_item_uses(item_two)
+
     # ----------------- !!!! Setters !!!! -----------------
 
     def set_player(self, player):
@@ -87,10 +109,16 @@ class Game:
         """Finds the next tile that hasnt been played on the board"""
 
         return next(filter(lambda tile: not tile.get_is_placed(),
-                    self.tiles))
+                           self.tiles))
 
     def get_current_tile(self):
         return self.tiles[self.current_index]
+
+    def get_connected_tiles(self):
+        current_tile = self.get_current_tile()
+        return filter(lambda tile: 
+                      current_tile.prev_tile_num == tile.tile_num,
+                      self.tiles)
 
     def get_event(self, dev_card):
         return dev_card.get_card_event(self.time)
@@ -138,6 +166,12 @@ class Game:
         new_tile = self.get_prev_tile(prev_tile_num)
         self.current_index = self.tiles.index(new_tile)
         self.player.runaway()
+        
+    def use_item_one(self):
+        self.player.remove_item_one_use()
+
+    def use_item_two(self):
+        self.player.remove_item_two_use()
 
     # ----------------- !!!! Handlers !!!! -----------------
 
@@ -164,7 +198,6 @@ class Game:
 
     def collect_item(self):
         """Draws a devcard and see if player wants the time"""
-        self.dev_card_index += 1
 
         dev_card = self.dev_cards[self.dev_card_index]
         item = dev_card.get_card_item()
@@ -191,3 +224,6 @@ class Game:
         if self.view.check_player_runaway(damage, zombies):
             self.runaway()
             return
+
+    def remove_health(self, health):
+        self.player.remove_health(health)
