@@ -91,17 +91,28 @@ class View():
             print("Invalid input, please enter y or n\n")
             self.check_go_inside()
 
-    def check_player_runaway(self, damage, zombies):
-            if damage >= 0:
-                print(f"{zombies} ZOMBIES APPEARS, IF YOU STAY YOU WILL NOT TAKE DAMAGE")
-            else:
-                print(f"{zombies} ZOMBIES APPEARS, IF YOU STAY YOU WILL TAKE {abs(damage)} DAMAGE")
+    def check_player_runaway(self, zombies, damage):
+        if damage <= 0:
+            print(f"{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL NOT TAKE DAMAGE")
+        else:
+            print(f"{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL TAKE {damage} DAMAGE")
 
-            runaway = input("Do you want to run away (y/n)? ")
-            if runaway[0].lower() == "y":
-                return True
-            elif runaway[0].lower() == "n":
-                return False
-            else: 
-                print("Invalid input, please enter y or n\n")
-                self.check_player_runaway()
+        runaway = input("Do you want to run away (y/n)? ")
+        if runaway[0].lower() == "y":
+            return True
+        elif runaway[0].lower() == "n":
+            return False
+        else: 
+            print("Invalid input, please enter y or n\n")
+            self.check_player_runaway(zombies, damage)
+    
+    def check_player_use_item(self, item):
+        use_item = input(f"\nWould you like to use {item.get_item_name()} (y/n)? ")
+
+        if use_item[0].lower() == "y":
+            return True
+        elif use_item[0].lower() == "n":
+            return False
+        else:
+            print("Invalid input, please enter y or n\n")
+            self.check_player_use_item(item)

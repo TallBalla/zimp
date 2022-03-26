@@ -11,7 +11,7 @@ class Item():
     def get_item_prop(self):
         return self.item_prop
 
-    def get_use_item(self):
+    def get_item_uses(self):
         return self.uses
 
     def use_item(self):

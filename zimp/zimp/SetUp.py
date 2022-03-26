@@ -100,7 +100,7 @@ class SetUp:
         self.insert_inside_tile(0, start_tile)
 
     def gen_dev_cards(self):
-        self.add_dev_card(Item(True, 'Oil', 'combination', 1),
+        self.add_dev_card(Item(True, 'Oil', 'combination special', 1),
                           Event(None, 'You try hard not to wet yourself'
                           ), Event('item', 'ITEM'), Event('zombie 6',
                           '6 Zombies'))
@@ -111,35 +111,35 @@ class SetUp:
                           'You sense your impending doom -1 HEALTH'),
                           Event('item', 'ITEM'))
 
-        self.add_dev_card(Item(False, 'Board with Nails', 'add attack 1'
+        self.add_dev_card(Item(False, 'Board with Nails', 'attack 1'
                           , 100), Event('item', 'ITEM'),
                           Event('zombie 4', '4 Zombies'),
                           Event('remove health',
                           'Something icky in your mouth -1 HEALTH'))
 
-        self.add_dev_card(Item(False, 'Machete', 'add attack 2', 100),
+        self.add_dev_card(Item(False, 'Machete', 'attack 2', 100),
                           Event('zombie 4', '4 Zombies'),
                           Event('remove health',
                           'A bat poops in your eye -1 HEALTH'),
                           Event('zombie 6', '6 Zombies'))
 
-        self.add_dev_card(Item(False, 'Grisly Femur', 'add attack 1',
+        self.add_dev_card(Item(False, 'Grisly Femur', 'attack 1',
                           100), Event('item', 'ITEM'), Event('zombie 5'
                           , '5 Zombies'), Event('remove health',
                           'Your soul isnt wanted here -1 HEALTH'))
 
-        self.add_dev_card(Item(False, 'Goal Club', 'add attack 1',
+        self.add_dev_card(Item(False, 'Goal Club', 'attack 1',
                           100), Event('remove health',
                           'Slip on nasty goo -1 HEALTH'),
                           Event('zombie 4', '4 Zombies'), Event(None,
                           'The smell of blood is in The air'))
 
-        self.add_dev_card(Item(True, 'Chainsaw', 'combination', 2),
+        self.add_dev_card(Item(True, 'Chainsaw', 'attack 3', 2),
                           Event('zombie 3', '3 Zombies'), Event(None,
                           'You hear terrible screams'), Event('zombie 5'
                           , '5 Zombies'))
 
-        self.add_dev_card(Item(False, 'Can of Soda', 'add health', 1),
+        self.add_dev_card(Item(False, 'Can of Soda', 'health', 1),
                           Event('add health',
                           'Candybar in you pocket +1 HEALTH'),
                           Event('item', 'ITEM'), Event('zombie 4',
