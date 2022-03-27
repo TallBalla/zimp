@@ -1,9 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from functools import partial
 import random
-
 
 class Game:
     current_index = 0
@@ -34,10 +29,10 @@ class Game:
         return self.get_current_tile_name == 'totem'
 
     def check_total_exits(self):
-        return self.get_total_exit() == 0
+        return self.get_total_exits() <= 0
 
     def check_avail_dev_cards(self):
-        return self.dev_card_index == len(self.dev_cards)
+        return (self.dev_card_index + 1)== len(self.dev_cards)
 
     def check_event_prop_is_not_none(self, event):
         return event.get_event_prop() is not None
@@ -99,26 +94,22 @@ class Game:
 
     # ----------------- !!!! Getters/Finders !!!! -----------------
 
-    def get_prev_tile(self, tile_num):
+    def get_prev_tile(self, prev_tile_num):
         """Gets the tile the player has just come from"""
 
-        return next(filter(lambda tile: tile.tile_num == tile_num,
+        return next(filter(lambda tile: tile.tile_num == prev_tile_num,
                     self.tiles))
 
     def get_next_avail_tile(self):
         """Finds the next tile that hasnt been played on the board"""
-
-        return next(filter(lambda tile: not tile.get_is_placed(),
-                           self.tiles))
+        return next(filter(lambda tile: not tile.get_is_placed(), self.tiles))
 
     def get_current_tile(self):
         return self.tiles[self.current_index]
 
-    #def get_connected_tiles(self):
-    #    current_tile = self.get_current_tile()
-    #    return filter(lambda tile: 
-    #                  current_tile.prev_tile_num == tile.tile_num,
-    #                  self.tiles)
+    def get_placed_connected_tiles(self, tile_num):
+        return filter(lambda tile: tile.prev_tile_num == tile_num,
+                        self.tiles)
 
     def get_event(self, dev_card):
         return dev_card.get_card_event(self.time)
@@ -132,12 +123,15 @@ class Game:
     def get_time(self):
         return self.time
 
-    def get_total_exit(self):
+    def get_total_exits(self):
         return sum(tile.exits for tile in self.tiles
                    if tile.get_is_placed())
 
     def get_tiles(self):
         return self.tiles
+
+    def get_tile_by_tile_num(self, tile_num):
+        return next(filter(lambda tile: tile.tile_num == tile_num, self.tiles))
     # ----------------- !!!! PLayer Actions !!!! -----------------
 
     def complete_game(self):
@@ -182,7 +176,7 @@ class Game:
         player want to draw a new tile"""
         current_tile = self.tiles[self.current_index]
         current_tile_num = current_tile.tile_num
-        current_tile.exits -= 1
+        current_tile.exits -= 1          
 
         # Finds the next avalible tile and sets tile to it
         next_tile = self.get_next_avail_tile()
@@ -193,7 +187,14 @@ class Game:
         new_tile.prev_tile_num = current_tile_num
         new_tile.set_is_placed()
         new_tile.exits -= 1
+
         return new_tile
+
+    def move_to_tile(self, tile_num):
+        move_tile = self.get_tile_by_tile_num(tile_num)
+        move_tile_index = self.tiles.index(move_tile)
+        self.current_index = move_tile_index
+        return move_tile
 
     def add_health(self, health):
         self.player.add_health(health)

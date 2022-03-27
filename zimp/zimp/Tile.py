@@ -1,12 +1,14 @@
 class Tile():
     def __init__(self, exits_aval, tile_name, tile_desc, tile_prop):
         self._exits_aval = exits_aval
-        self._prev_tile_num = 0
+        self._prev_tile_num = 99
         self._tile_num = 0
         self.is_placed = False
         self.tile_name = tile_name
         self.tile_desc = tile_desc
         self.tile_prop = tile_prop
+
+
 
     # Number of exits
     @property
@@ -64,3 +66,5 @@ class Tile():
         """Gets the tile properties so actions can be performed when tile placed"""
         return self.tile_prop
 
+    def check_avail_exits(self):
+        return self.exits <= 0

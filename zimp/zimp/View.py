@@ -4,6 +4,9 @@ class View():
     def get_user_name(self):
         return input("Please enter user name: ")
 
+    def display_current_room_info(self, current_tile):
+        print(f"\nCURRENT TILE {current_tile.get_tile_name()} NUM EXITS = {current_tile.exits}")
+
     def display_drawing_dev_card(self):
         print("\nDrawing Dev Card...")
 
@@ -21,6 +24,9 @@ class View():
     def display_tile(self, tile):
         print(f"\n{tile.get_tile_name()}")
         print(tile.get_tile_description())
+
+    def display_no_exits_in_current_room(self, tile_name):
+        print(f"\nTHERE ARE NO EXITS IN THE CURRENT ROOM {tile_name}")
 
     def dsiplay_totem_collected(self):
         print("\nTOTEM COLLECTED")

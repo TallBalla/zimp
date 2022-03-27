@@ -56,28 +56,30 @@ class Controller():
 
         self.view.display_tile(current_tile)
 
+        for tile in self.game.outside_tiles:
+            print(tile.get_tile_name())
+
         i = 0
         # while not self.game.check_player_has_buried_totem():
         while i < 3:
             self.runaway = False
 
+
+            current_tile = self.game.get_current_tile()
+            self.view.display_current_room_info(current_tile)
+
+            # here is a menu, it allows player to select there action
+
+            if current_tile.check_avail_exits() and not self.game.check_for_zombie_door():
+                self.view.display_no_exits_in_current_room(current_tile.get_tile_name())
+                self.move_to_previous_tile(current_tile.prev_tile_num)            
+            else:
+                self.view.display_drawing_tile()
+                tile = self.draw_tile()
+                self.view.display_tile(tile)
+
             # view player stats
-            self.view.display_drawing_tile()
-            #print()
-            #for ti in self.game.get_tiles():
-            #    print(ti.get_tile_name())
-
-            tile = self.draw_tile()
-
-            self.view.display_tile(tile)
-
-            #for tile in self.game.get_connected_tiles():
-            #    print(tile.get_tile_name())
-
             self.view.display_player(self.game.get_player())
-
-
-
             self.view.display_drawing_dev_card()
 
             dev_card = self.draw_dev_card()
@@ -85,26 +87,28 @@ class Controller():
 
             self.view.display_event(self.game.get_time(), event)
 
-            #if self.game.check_event_prop_is_not_none(event):
-            #    self.event_props.get(event.get_event_prop())()
+            if self.game.check_event_prop_is_not_none(event):
+                self.event_props.get(event.get_event_prop())()
+
+            if self.runaway:
+                continue
 
             if self.game.check_tile_prop_is_not_none(tile):
-                print("tile prop is not none")
                 self.tile_props.get(tile.get_tile_prop())()
 
-    def draw_tile(self):
+            if self.game.check_for_zombie_door():
+                self.zombie_door_attack()
 
-        if self.game.check_for_zombie_door():
-            self.zombie_door_attack()
+    def draw_tile(self):
         new_tile = self.game.draw_tile()
         return new_tile
 
     def draw_dev_card(self):
-        self.game.increment_dev_card_index()
 
         if self.game.check_avail_dev_cards():
             self.view.warning_shuffle_dev_card()
             self.game.reshuffle()
+        self.game.increment_dev_card_index()
         new_dev_card = self.game.draw_dev_card()
         return new_dev_card
 
@@ -113,12 +117,14 @@ class Controller():
         if self.view.check_go_outside():
             self.game.set_tiles_outside()
             self.game.set_location()
+        return
 
     def exterior_door_outside(self):
 
         if self.view.check_go_inside():
             self.game.set_tiles_inside()
             self.game.set_location()
+        return
 
     def collect_item(self):
         player = self.game.get_player()
@@ -181,6 +187,7 @@ class Controller():
                     self.use_item_combination_special()
                     return
             self.remove_health(int(1))
+            self.game.runaway()
             return
         self.remove_health(damage_taken)
     
@@ -194,8 +201,24 @@ class Controller():
     def remove_health(self, health):
         self.game.remove_health(health)
 
-    def move_to_previous_tile(self):
-        return
+    def move_to_placed_tile(self, tile_num):
+        for tile in self.game.get_placed_connected_tiles(tile_num):
+            print(tile.get_tile_name())
+        #sees what place tile user want
+        tile_num = input("what tile")
+
+        placed_tile = self.game.move_to_tile(tile_num)
+        return placed_tile
+
+    def move_to_previous_tile(self, prev_tile_num):
+        #Display all previous tiles
+        prev_tile = self.game.get_prev_tile(prev_tile_num)
+        print(prev_tile.get_tile_name())
+
+        yes = input("would you like to move back to this tile")
+
+        prev_tile = self.game.move_to_tile(prev_tile_num)
+        return prev_tile
 
     def use_item_attack(self):
         player = self.game.get_player()
