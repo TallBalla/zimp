@@ -78,7 +78,6 @@ class Controller():
                 tile = self.draw_tile()
                 self.view.display_tile(tile)
 
-            # view player stats
             self.view.display_player(self.game.get_player())
             self.view.display_drawing_dev_card()
 
