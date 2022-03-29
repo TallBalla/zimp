@@ -5,7 +5,7 @@ from Game import Game
 from directions import Direction as d
 
 class Commands(cmd.Cmd):
-    intro = 'Welcome, type help or ? to list the commands or start to start the game'
+    intro = 'Welcome to Zombie in my Pocket, type help or "?" to list the commands or "start" to start the game'
 
     def __init__(self):
         cmd.Cmd.__init__(self)
@@ -18,14 +18,16 @@ class Commands(cmd.Cmd):
         if self.game.state == "Starting":
             self.game.start_game()
             self.game.get_game()
+            print('\nIf you like tile rotation enter "place" or "rotate" to rotate tile')
         else:
-            print("Game has already Started")
+            print('\nGame already started, enter "place" to select tile rotation')
 
     def do_rotate(self, line):
         """Rotates the current map piece 1 rotation clockwise"""
         if self.game.state == "Rotating":
             self.game.rotate()
             self.game.get_game()
+            print('\nIf you like the rotation enter "place"')
         else:
             print("Tile not chosen to rotate")
 
@@ -208,7 +210,7 @@ class Commands(cmd.Cmd):
     def do_give2(self, line):
         self.game.player.add_item("Candle", 1)
 
-    def do_run(self, direction):
+    def do_runaway(self, direction):
         """Given a direction will flee attacking zombies at a price of one health"""
         if self.game.state == "Attacking":
             if direction == 'n':
@@ -250,9 +252,9 @@ class Commands(cmd.Cmd):
 
     def do_prompt(self, line):
         """Change the interactive prompt"""
-        self.prompt = line + ': '
+        self.prompt = line + '# '
 
-    def do_exit(self, line):
+    def do_EOF(self, line):
         """Exits the game without saving"""
         return True
 
