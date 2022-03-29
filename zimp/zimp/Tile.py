@@ -1,66 +1,49 @@
-class Tile():
-    def __init__(self, exits_aval, tile_name, tile_desc, tile_prop):
-        self._exits_aval = exits_aval
-        self._prev_tile_num = 0
-        self._tile_num = 0
-        self.is_placed = False
-        self.tile_name = tile_name
-        self.tile_desc = tile_desc
-        self.tile_prop = tile_prop
+from directions import Direction as d
 
-    # Number of exits
-    @property
-    def exits(self):
-        """Gets the amount of exits avalible"""
-        return self._exits_aval
+class Tile:
+    def __init__(self, name, x=16, y=16, effect=None, doors=None, entrance=None):
+        if doors is None:
+            doors = []
+        self.name = name
+        self.x = x  # x will represent the tiles position horizontally
+        self.y = y  # y will represent the tiles position vertically
+        self.effect = effect
+        self.doors = doors
+        self.entrance = entrance
 
-    @exits.setter
-    def exits(self, new_exit_num):
-        """Sets the number of exits avalible"""
-        self._exits_aval = new_exit_num
+    def set_x(self, x):
+        self.x = x
 
-    # Tile number or id,
-    # it helps ditermine what the tile.
-    @property
-    def tile_num(self):
-        """Gets the tile number"""
-        return self._tile_num
+    def set_y(self, y):
+        self.y = y
 
-    @tile_num.setter
-    def tile_num(self, new_tile_num):
-        """Sets the tile number"""
-        self._tile_num = int(new_tile_num)
+    def change_door_position(self, idx, direction):
+        self.doors[idx] = direction
 
-    # Tile previous number of the tile
-    # (the tile its linked to).
-    @property
-    def prev_tile_num(self):
-        """Gets the number of the tile that the current tile is linked to"""
-        return self._prev_tile_num
+    def set_entrance(self, direction):
+        self.entrance = direction
 
-    @prev_tile_num.setter
-    def prev_tile_num(self, new_prev_tile_num):
-        """Sets the number of the tile that the current tile is linked to"""
-        self._prev_tile_num = new_prev_tile_num
-    
-    def set_is_placed(self):
-        """Sets a tile to display it has been placed"""
-        self.is_placed = True
+    def rotate_entrance(self):
+        if self.entrance == d.NORTH:
+            self.set_entrance(d.EAST)
+            return
+        if self.entrance == d.SOUTH:
+            self.set_entrance(d.WEST)
+            return
+        if self.entrance == d.EAST:
+            self.set_entrance(d.SOUTH)
+            return
+        if self.entrance == d.WEST:
+            self.set_entrance(d.NORTH)
+            return
 
-    # Is placeds methods, couldnt use a property
-    # because though it was pointless to pass in true.
-    def get_is_placed(self):
-        """Gets information about a tile being placed"""
-        return self.is_placed
-
-    def get_tile_description(self):
-        return self.tile_desc
-
-    def get_tile_name(self):
-        """Gets the name of the tile"""
-        return self.tile_name
-
-    def get_tile_prop(self):
-        """Gets the tile properties so actions can be performed when tile placed"""
-        return self.tile_prop
-
+    def rotate_tile(self):  # Will rotate the tile 1 position clockwise
+        for door in self.doors:
+            if door == d.NORTH:
+                self.change_door_position(self.doors.index(door), d.EAST)
+            if door == d.EAST:
+                self.change_door_position(self.doors.index(door), d.SOUTH)
+            if door == d.SOUTH:
+                self.change_door_position(self.doors.index(door), d.WEST)
+            if door == d.WEST:
+                self.change_door_position(self.doors.index(door), d.NORTH)
