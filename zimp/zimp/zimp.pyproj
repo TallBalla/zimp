@@ -32,6 +32,8 @@
     <Compile Include="OutdoorTile.py" />
     <Compile Include="Player.py" />
     <Compile Include="Tile.py" />
+    <Compile Include="Unittests.py" />
+    <Compile Include="View.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

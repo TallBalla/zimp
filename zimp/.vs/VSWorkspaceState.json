@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\zimp"
+    "\\zimp",
+    "\\zimp\\env",
+    "\\zimp\\env\\Include",
+    "\\zimp\\env\\Lib"
   ],
   "SelectedNode": "\\zimp.sln",
   "PreviewInSolutionExplorer": false

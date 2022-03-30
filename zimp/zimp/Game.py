@@ -12,7 +12,7 @@ import random
 
 class Game:
     def __init__(self, player, time=9, game_map=None, indoor_tiles=None, outdoor_tiles=None, chosen_tile=None,
-                 dev_cards=None, state="Starting", current_move_direction=None, can_cower=True):
+                 dev_cards=None, state=None, current_move_direction=None, can_cower=True):
         if indoor_tiles is None:
             indoor_tiles = []  # Will contain a list of all available indoor tiles
         if outdoor_tiles is None:
@@ -49,10 +49,34 @@ class Game:
 
     def check_state_is_drawing_dev_card(self):
         return self.state == 'Drawing Dev Card'
+
+    def check_state_is_starting(self):
+        return self.state == 'Starting'
     
+    def check_dev_cards_is_empty(self):
+        return len(self.dev_cards) == 0
+
+    def check_game_map_is_empty(self):
+        return len(self.game_map) == 0
+    
+    def check_indoor_tiles_is_empty(self):
+        return len(self.indoor_tiles) == 0
+
+    def check_outdoor_tiles_is_empty(self):
+        return len(self.outdoor_tiles) == 0 
+
     # end Willem checks
 
-    def start_game(self):  #  Run to initialise the game
+    # start willem implemented
+    def get_state(self):
+        return self.state
+
+    def start_game(self):
+        self.state = 'Starting'
+
+    # end willem implmented
+
+    def start_game_play(self):  #  Run to initialise the game
         self.load_tiles()
         self.load_dev_cards()
         for tile in self.indoor_tiles:
@@ -61,32 +85,30 @@ class Game:
                 self.state = "Rotating"
                 break
 
-    def get_game(self):
+    # todo fix all the suggested commands
+    def get_suggested_command(self):
         s = ''
-        f = ''
         if self.check_state_is_moving():
-            s = "In this state you are able to move the player using the movement commands of n, e, s, w"
+            s = "n, e, s, w"
         if self.check_state_is_rotating():
-            s = "Use the rotate command to rotate tiles and align doors," \
-                " Once you are happy with the door position you can place the tile with the place command"
+            s = "rotate, place"
         if self.check_state_is_choosing_door():
-            s = "Choose where to place a new door with the choose command + n, e, s, w"
+            s = "n, e, s, w"
         if self.check_state_is_drawing_dev_card():
-            s = "Use the draw command to draw a random development card"
-        for door in self.chosen_tile.doors:
-            f += door.name + ', '
-        return print(f' The chosen tile is {self.chosen_tile.name}, the available doors in this room are {f}\n '
-                     f'The state is {self.state}. {s} \n Special Entrances : {self.chosen_tile.entrance}')
+            s = "draw"
+        return s
 
-    def get_player_status(self):
-        return print(f'It is {self.get_time()} pm \n'
-                     f'The player currently has {self.player.get_health()} health \n'
-                     f'The player currently has {self.player.get_attack()} attack \n'
-                     f'The players items are {self.player.get_items()}\n'
-                     f'The game state is {self.state}')
+    def get_availiable_doors(self):
+        return ' '.join(str(i.name) for i in self.chosen_tile.doors)
+
+    def get_player(self):
+        return self.player
 
     def get_time(self):
         return self.time
+
+    def get_chosen_tile(self):
+        return self.chosen_tile
 
     # Loads tiles from excel file
     def load_tiles(self):  # Needs Error handling in this method
@@ -160,10 +182,9 @@ class Game:
     # Loads development cards from excel file
     def load_dev_cards(self):
         #TODO complete the exception for try catch
-        try:
-            card_data = pd.read_excel('DevCards.xlsx')
-        except:
-            print('cannot load file, check its in the corret')
+
+        card_data = pd.read_excel('DevCards.xlsx')
+
         for card in card_data.iterrows():
             item = card[1][0]
             event_one = (card[1][1], card[1][2])
@@ -333,12 +354,12 @@ class Game:
         if self.check_current_tile_entrance_east():
             if self.check_choosen_tile_entrance_west():
                 return True
-        return print(" Dining room and Patio entrances dont align")
+        return False
 
     def check_dining_room_has_exit(self):  # used to make sure the dining room exit is not facing an existing door
         tile = self.chosen_tile
         if tile.name == "Dining Room":
-            if self.check_current_direct_north_and_entrace_south(tile):
+            if self.check_current_direct_north_and_entrance_south(tile):
                 return False
             if self.check_current_direct_south_and_entrance_north(tile):
                 return False
@@ -420,11 +441,11 @@ class Game:
             print("There is nothing in this room")
             if len(self.chosen_tile.doors) == 1 and self.chosen_tile.name != "Foyer":
                 self.state = "Choosing Door"
-                self.get_game()
+                self.get_suggested_command()
                 return
             else:
                 self.state = "Moving"
-                self.get_game()
+                self.get_suggested_command()
             return
         elif self.check_event_type(event, "Health"):  # Change health of player
             print("There might be something in this room")
@@ -447,7 +468,7 @@ class Game:
                 self.trigger_room_effect(self.get_current_tile().name)
             else:
                 self.state = "Moving"
-                self.get_game()
+                self.get_suggested_command()
         elif self.check_event_type(event, "Item"):  # Add item to player's inventory if there is room
             if len(self.dev_cards) == 0:
                 if self.get_time == 11:
@@ -466,10 +487,10 @@ class Game:
                 print(f"You picked up the {next_card.get_item()}")
                 if len(self.chosen_tile.doors) == 1 and self.chosen_tile.name != "Foyer":
                     self.state = "Choosing Door"
-                    self.get_game()
+                    self.get_suggested_command()
                 else:
                     self.state = "Moving"
-                    self.get_game()
+                    self.get_suggested_command()
             else:
                 self.room_item = [next_card.get_item(), next_card.charges]
                 response = input("You already have two items, do you want to drop one of them? (Y/N) ")
@@ -478,7 +499,7 @@ class Game:
                 else: # If player doesn't want to drop item, just move on
                     self.state = "Moving"
                     self.room_item = None
-                    self.get_game()
+                    self.get_suggested_command()
             if self.get_current_tile().name == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
         elif event[0] == "Zombies":  # Add zombies to the game, begin combat

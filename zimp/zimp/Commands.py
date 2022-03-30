@@ -1,41 +1,56 @@
 import cmd
 import pickle
 from Player import Player
+import os
+
 from Game import Game
 from directions import Direction as d
 
+from View import View
+
 class Commands(cmd.Cmd):
-    intro = 'Welcome to Zombie in my Pocket, type help or "?" to list the commands or "start" to start the game'
 
     def __init__(self):
         cmd.Cmd.__init__(self)
-        self.prompt = "$ "
+        self.prompt = "> "
         self.player = Player()
         self.game = Game(self.player)
+        self.view = View()
+
+    def display_game_info(self):
+        self.view.display_game(self.game.get_chosen_tile(),
+                               self.game.get_state(),
+                               self.game.get_availiable_doors(),
+                               self.game.get_suggested_command())
 
     def do_start(self, line):
         """Starts a new game"""
-        if self.game.state == "Starting":
-            self.game.start_game()
-            self.game.get_game()
-            print('\nIf you like tile rotation enter "place" or "rotate" to rotate tile')
-        else:
+        if self.game.get_state() == "Starting":
             print('\nGame already started, enter "place" to select tile rotation')
+            return
+
+        self.game.start_game()
+
+        self.view.display_start_heading()
+
+        self.game.start_game_play()
+        self.display_game_info()
 
     def do_rotate(self, line):
         """Rotates the current map piece 1 rotation clockwise"""
         if self.game.state == "Rotating":
             self.game.rotate()
-            self.game.get_game()
-            print('\nIf you like the rotation enter "place"')
+            self.display_game_info()
+
         else:
-            print("Tile not chosen to rotate")
+            print("warning")
 
     def do_place(self, line):
         """Places the current map tile"""
         if self.game.state == "Rotating":
             if self.game.chosen_tile.name == "Foyer":
                 self.game.place_tile(16, 16)
+
             elif self.game.check_dining_room_has_exit() is False:
                 return print("Dining room entrance must face an empty tile")
             else:
@@ -43,15 +58,16 @@ class Commands(cmd.Cmd):
                         and self.game.current_move_direction == self.game.get_current_tile().entrance:
                     if self.game.check_entrances_align():
                         self.game.place_tile(self.game.chosen_tile.x, self.game.chosen_tile.y)
-                        self.game.move_player(self.game.chosen_tile.x, self.game.chosen_tile.y)
+                        self.game.move_player(self.game.chosen_tile.x, self.game.chosen_tile.y)    
+                    print("Dining room and Patio entrances dont align")   
                 elif self.game.check_doors_align(self.game.current_move_direction):
                     self.game.place_tile(self.game.chosen_tile.x, self.game.chosen_tile.y)
                     self.game.move_player(self.game.chosen_tile.x, self.game.chosen_tile.y)
                 else:
-                    print(" Must have at least one door facing the way you came from")
-            self.game.get_game()
-        else:
-            print("Tile not chosen to place")
+                    print('You must have at least one door facing the way you came from,'
+                                  ' enter "rotate" to line up doors')
+            self.game.get_suggested_command()
+
 
     def do_choose(self, direction):
         """When a zombie door attack is completed. Use this command to select an exit door with a valid direction"""
@@ -76,7 +92,8 @@ class Commands(cmd.Cmd):
         """Moves the player North"""
         if self.game.state == "Moving":
             self.game.select_move(d.NORTH)
-            self.game.get_game()
+            self.display_game_info()
+            
         else:
             print("Player not ready to move")
 
@@ -84,7 +101,8 @@ class Commands(cmd.Cmd):
         """Moves the player South"""
         if self.game.state == "Moving":
             self.game.select_move(d.SOUTH)
-            self.game.get_game()
+            self.display_game_info()
+
         else:
             print("Player not ready to move")
 
@@ -92,7 +110,8 @@ class Commands(cmd.Cmd):
         """Moves the player East"""
         if self.game.state == "Moving":
             self.game.select_move(d.EAST)
-            self.game.get_game()
+            self.display_game_info()
+
         else:
             print("Player not ready to move")
 
@@ -100,7 +119,8 @@ class Commands(cmd.Cmd):
         """Moves the player West"""
         if self.game.state == "Moving":
             self.game.select_move(d.WEST)
-            self.game.get_game()
+            self.display_game_info()
+
         else:
             print("Player not ready to move")
 
@@ -118,22 +138,16 @@ class Commands(cmd.Cmd):
     def do_load(self, name):
         """Takes a filepath and loads the game from a file"""
         if not name:
-            return print("Must enter a valid file name")
-        else:
-            file_name = name + '.pickle'
-            try:
-                with open(file_name, 'rb') as f:
-                    self.game = pickle.load(f)
-                    self.game.get_game()
-            except FileNotFoundError:
-                print("No File with this name exists")
+            print("Must enter a valid file name")
+            return
 
-    def do_restart(self, line):
-        """Deletes your progress and ends the game"""
-        del self.game
-        del self.player
-        self.player = Player()
-        self.game = Game(self.player)
+        file_name = name + '.pickle'
+        try:
+            with open(file_name, 'rb') as f:
+                self.game = pickle.load(f)
+                self.game.get_game()
+        except FileNotFoundError:
+            print("No File with this name exists")
 
     def do_attack(self, line):
         """Player attacks the zombies"""
@@ -154,12 +168,12 @@ class Commands(cmd.Cmd):
 
             if len(self.game.chosen_tile.doors) == 1 and self.game.chosen_tile.name != "Foyer":
                 self.game.state = "Choosing Door"
-                self.game.get_game()
+                self.game.get_suggested_command()
             if self.game.state == "Game Over":
                 print("You lose, game over, you have succumbed to the zombie horde")
-                print("To play again, type 'restart'")
+                print('To play again, type "start"')
             else:
-                self.game.get_game()
+                self.game.get_suggested_command()
         else:
             print("You cannot attack right now")
 
@@ -187,7 +201,7 @@ class Commands(cmd.Cmd):
         """Drops an item from your hand"""
         if self.game.state != "Game Over":
             self.game.drop_item(item)
-            self.game.get_game()
+            self.game.get_suggested_command()
     
     def do_swap(self, line):
         """Swaps an item in you hand with the one in the room"""
@@ -195,7 +209,7 @@ class Commands(cmd.Cmd):
             self.game.drop_item(line)
             self.game.player.add_item(self.game.room_item[0], self.game.room_item[1])
             self.game.room_item = None
-            self.game.get_game()
+            self.game.get_suggested_command()
 
     def do_draw(self, line):
         """Draws a new development card (Must be done after evey move)"""
@@ -225,7 +239,7 @@ class Commands(cmd.Cmd):
                 print("Cannot run that direction")
             if len(self.game.get_current_tile().doors) == 1 and self.game.chosen_tile.name != "Foyer":
                 self.game.state = "Choosing Door"
-                self.game.get_game()
+                self.game.get_suggested_command()
         else:
             print("Cannot run when not being attacked")
 
@@ -260,5 +274,12 @@ class Commands(cmd.Cmd):
 
     def do_status(self, line):
         """Shows the status of the player"""
+        player = self.game.get_player()
+        time = self.game.get_time()
+        state = self.game.get_state()
+
         if self.game.state != "Game Over":
-            self.game.get_player_status()
+            self.view.display_player(player, time, state)
+
+    def get_game(self):
+        return self.game
