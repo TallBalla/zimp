@@ -1,232 +1,682 @@
+from OutdoorTile import OutdoorTile
+from IndoorTile import IndoorTile
+from Player import Player
+from DevCard import DevCard
+from Tile import Tile
+
+from directions import Direction as d
+import pandas as pd
+
+import pickle
 import random
 
 class Game:
-    current_index = 0
-    dev_card_index = 1
-    has_totem = False
-    is_inside = True
-    is_totem_buried = False
-    saved_inside_index = 0
-    saved_outside_index = 0
-    time = 9
-
-    def __init__(self, player, dev_cards, inside_tiles, outside_tile):
+    def __init__(self, player, time=9, game_map=None, indoor_tiles=None, outdoor_tiles=None, chosen_tile=None,
+                 dev_cards=None, state=None, current_move_direction=None, can_cower=True):
+        if indoor_tiles is None:
+            indoor_tiles = []  # Will contain a list of all available indoor tiles
+        if outdoor_tiles is None:
+            outdoor_tiles = []  # Will contain a list of all available outdoor tiles
+        if dev_cards is None:
+            dev_cards = []  # Will contain a list of all available development cards
+        if game_map is None:
+            game_map = {}  # Tiles dictionary will have the x and y co-ords as the key and the Tile object as the value
         self.player = player
+        self.time = time
+        self.indoor_tiles = indoor_tiles
+        self.outdoor_tiles = outdoor_tiles
         self.dev_cards = dev_cards
-        self.inside_tiles = inside_tiles
-        self.outside_tiles = outside_tile
-        self.tiles = inside_tiles
+        self.tiles = game_map
+        self.chosen_tile = chosen_tile
+        self.state = state
+        self.current_move_direction = current_move_direction
+        self.current_zombies = 0
+        self.can_cower = can_cower
+        self.room_item = None
 
-    # ----------------- !!!! Checkers !!!! -----------------
+    # start Willem checks
+    def check_tile_name_foyer(self, tile):
+        return tile.name == 'Foyer'
 
-    def check_aval_tile_count(self):
-        return sum(not tile.get_is_placed() for tile in self.tiles) != 0
+    def check_state_is_moving(self):
+        return self.state == 'Moving'
 
-    def check_is_inside(self):
-        return self.is_inside
+    def check_state_is_rotating(self):
+        return self.state == 'Rotating'
 
-    def check_current_room_evil_temple(self):
-        return self.get_current_tile_name == 'totem'
+    def check_state_is_choosing_door(self):
+        return self.state == 'Choosing Door'
 
-    def check_total_exits(self):
-        return self.get_total_exits() <= 0
+    def check_state_is_drawing_dev_card(self):
+        return self.state == 'Drawing Dev Card'
 
-    def check_avail_dev_cards(self):
-        return (self.dev_card_index + 1)== len(self.dev_cards)
-
-    def check_event_prop_is_not_none(self, event):
-        return event.get_event_prop() is not None
-
-    def check_tile_prop_is_not_none(self, tile):
-        return tile.get_tile_prop() is not None
-
-    def check_for_zombie_door(self):
-        return (self.check_total_exits() and
-                self.check_aval_tile_count())
-
-    def check_player_has_totem(self):
-        return self.has_totem
-
-    def check_player_has_buried_totem(self):
-        return self.is_totem_buried
-
-    def check_player_holds_attack_item(self):
-        items_props = map(lambda item: item.get_item_prop(),
-                          self.player.get_items())
-
-        return any('attack' in item_prop for item_prop in items_props)
-
-    def check_player_holds_health_item(self):
-        items_props = map(lambda item: item.get_item_prop(),
-                          self.player.get_items())
-        return 'health' in items_props    
-
-    def check_player_holds_special_item(self):
-        items_props = map(lambda item: item.get_item_prop(),
-                          self.player.get_items())
-        return 'special' in items_props    
+    def check_state_is_starting(self):
+        return self.state == 'Starting'
     
-    def check_item_one_uses(self):
-        item_one = self.player.item_one
-        return self.player.check_item_uses(item_one)
+    def check_dev_cards_is_empty(self):
+        return len(self.dev_cards) == 0
 
-    def check_item_two_uses(self):
-        item_two = self.player.item_two
-        return self.player.check_item_uses(item_two)
+    def check_game_map_is_empty(self):
+        return len(self.game_map) == 0
+    
+    def check_indoor_tiles_is_empty(self):
+        return len(self.indoor_tiles) == 0
 
-    # ----------------- !!!! Setters !!!! -----------------
+    def check_outdoor_tiles_is_empty(self):
+        return len(self.outdoor_tiles) == 0 
 
-    def set_player(self, player):
-        self.player = player
+    # end Willem checks
 
-    def set_location(self):
-        self.is_inside = not self.is_inside
+    # start willem implemented
+    def get_state(self):
+        return self.state
 
-    def set_tiles_inside(self):
-        self.outside_tiles = self.tiles
-        self.tiles = self.inside_tiles
-        self.current_index = self.saved_inside_index
+    def start_game(self):
+        self.state = 'Starting'
 
-    def set_tiles_outside(self):
-        self.inside_tiles = self.tiles
-        self.tiles = self.outside_tiles
-        self.current_index = self.saved_outside_index
+    # end willem implmented
 
-    # ----------------- !!!! Getters/Finders !!!! -----------------
+    def start_game_play(self):  #  Run to initialise the game
+        self.load_tiles()
+        self.load_dev_cards()
+        for tile in self.indoor_tiles:
+            if self.check_tile_name_foyer(tile):  # Game always starts in the Foyer at 16,16
+                self.chosen_tile = tile
+                self.state = "Rotating"
+                break
 
-    def get_prev_tile(self, prev_tile_num):
-        """Gets the tile the player has just come from"""
+    # todo fix all the suggested commands
+    def get_suggested_command(self):
+        s = ''
+        if self.check_state_is_moving():
+            s = "n, e, s, w"
+        if self.check_state_is_rotating():
+            s = "rotate, place"
+        if self.check_state_is_choosing_door():
+            s = "n, e, s, w"
+        if self.check_state_is_drawing_dev_card():
+            s = "draw"
+        return s
 
-        return next(filter(lambda tile: tile.tile_num == prev_tile_num,
-                    self.tiles))
-
-    def get_next_avail_tile(self):
-        """Finds the next tile that hasnt been played on the board"""
-        return next(filter(lambda tile: not tile.get_is_placed(), self.tiles))
-
-    def get_current_tile(self):
-        return self.tiles[self.current_index]
-
-    def get_placed_connected_tiles(self, tile_num):
-        return filter(lambda tile: tile.prev_tile_num == tile_num,
-                        self.tiles)
-
-    def get_event(self, dev_card):
-        return dev_card.get_card_event(self.time)
+    def get_availiable_doors(self):
+        return ' '.join(str(i.name) for i in self.chosen_tile.doors)
 
     def get_player(self):
         return self.player
 
-    def get_remaining_dev_cards(self):
-        return (len(self.dev_cards) - self.dev_card_index)
-
     def get_time(self):
         return self.time
 
-    def get_total_exits(self):
-        return sum(tile.exits for tile in self.tiles
-                   if tile.get_is_placed())
+    def get_chosen_tile(self):
+        return self.chosen_tile
 
-    def get_tiles(self):
-        return self.tiles
+    # Loads tiles from excel file
+    def load_tiles(self):  # Needs Error handling in this method
+        excel_data = pd.read_excel('Tiles.xlsx')
+        tiles = []
+        for name in excel_data.iterrows():
+            tiles.append(name[1].tolist())
+        for tile in tiles:
+            doors = self.resolve_doors(tile[3], tile[4], tile[5], tile[6])
+            if self.check_tile_outdoors_index(2, tile):
+                new_tile = OutdoorTile(tile[0], tile[1], doors)
+                if self.check_tile_patio(0, tile):
+                    new_tile.set_entrance(d.NORTH)
+                self.outdoor_tiles.append(new_tile)
+            if self.check_tile_indoors_index(2, tile):
+                new_tile = IndoorTile(tile[0], tile[1], doors)
+                if self.check_tile_dining_room(0, tile):
+                    new_tile.set_entrance(d.NORTH)
+                self.indoor_tiles.append(new_tile)
 
-    def get_tile_by_tile_num(self, tile_num):
-        return next(filter(lambda tile: tile.tile_num == tile_num, self.tiles))
-    # ----------------- !!!! PLayer Actions !!!! -----------------
+    # start willem checks
+    def check_tile_outdoors_index(self, index, tile):
+        return tile[index] == 'Outdoor'
 
-    def complete_game(self):
-        """Performs a sequence of actions when the player completes the game"""
+    def check_tile_indoors_index(self, index, tile):
+        return tile[index] == 'Indoor'
 
-    def cower(self):
-        """Allows a player to gain health"""
-        self.dev_card_index += 1
-        self.player.cower()
+    def check_tile_dining_room(self, index, tile):
+        return tile[index] == 'Dining Room'
 
-    def draw_dev_card(self):
-        return self.dev_cards[self.dev_card_index]
+    def check_tile_patio(self, index, tile):
+        return tile[index] == 'Patio'
+    
+    def check_current_tile_type_indoors(self):
+        return self.get_current_tile().type == "Indoor"
 
-    def increment_dev_card_index(self):
-        self.dev_card_index += 1
+    def check_current_tile_name_dining_room(self):
+        return self.get_current_tile().name == "Dining Room"
 
-    def reshuffle(self):
-        self.time += 1
-        self.dev_card_index = 1
+    def check_player_facing_exit(self):
+        return self.current_move_direction == self.get_current_tile().entrance
+
+    def check_player_can_move_outside(self):
+        return self.check_current_tile_name_dining_room() \
+            and self.check_player_facing_exit()
+    # end willem checks
+
+    def draw_tile(self, x, y):  # Called when the player moves through a door into an un-discovered room to
+        if self.check_current_tile_type_indoors():  # get a new tile
+            if len(self.indoor_tiles) == 0:
+                return print("No more indoor tiles")
+            if self.check_player_can_move_outside():
+                t = [t for t in self.outdoor_tiles if t.name == "Patio"]
+                tile = t[0]
+                tile.set_x(x)
+                tile.set_y(y)
+                self.chosen_tile = tile
+            else:
+                tile = random.choice(self.indoor_tiles)  # Chooses a random indoor tile and places it
+                tile.set_x(x)
+                tile.set_y(y)
+                self.chosen_tile = tile
+        elif self.get_current_tile().type == "Outdoor":
+            if len(self.outdoor_tiles) == 0:
+                return print("No more outdoor tiles")
+            tile = random.choice(self.outdoor_tiles)
+            tile.set_x(x)
+            tile.set_y(y)
+            self.chosen_tile = tile
+
+    # Loads development cards from excel file
+    def load_dev_cards(self):
+        #TODO complete the exception for try catch
+
+        card_data = pd.read_excel('DevCards.xlsx')
+
+        for card in card_data.iterrows():
+            item = card[1][0]
+            event_one = (card[1][1], card[1][2])
+            event_two = (card[1][3], card[1][4])
+            event_three = (card[1][5], card[1][6])
+            charges = card[1][7]
+            dev_card = DevCard(item, charges, event_one, event_two, event_three)
+            self.dev_cards.append(dev_card)
         random.shuffle(self.dev_cards)
-        return self.time
+        self.dev_cards.pop(0)
+        self.dev_cards.pop(0)
 
-    def runaway(self):
-        """Player can only run into the previous room when running away"""
+    # start willem checks
+    def check_state_is_running(self):
+        return self.state == "Running" 
 
-        tile = self.tiles[self.current_index]
-        prev_tile_num = tile.prev_tile_num
-        new_tile = self.get_prev_tile(prev_tile_num)
-        self.current_index = self.tiles.index(new_tile)
-        self.player.runaway()
-        
-    def use_item_one(self):
-        self.player.remove_item_one_use()
+    def check_cant_move_to_room(self, x, y):
+        return self.check_for_room(x, y) is False
 
-    def use_item_two(self):
-        self.player.remove_item_two_use()
+    # end willem checks
 
-    # ----------------- !!!! Handlers !!!! -----------------
+    def move_player(self, x, y):  # Moves the player coordinates to the selected tile, changes game state
+        self.player.set_y(y)
+        self.player.set_x(x)
+        if self.check_state_is_running():
+            self.state = "Moving"
+        else:
+            self.state = "Drawing Dev Card"
 
-    def draw_tile(self):
-        """Preforms a sequence of actions when the
-        player want to draw a new tile"""
-        current_tile = self.tiles[self.current_index]
-        current_tile_num = current_tile.tile_num
-        current_tile.exits -= 1          
+    def get_tile_at(self, x, y):  # Returns the tile given x and y coordinates
+        return self.tiles[(x, y)]
 
-        # Finds the next avalible tile and sets tile to it
-        next_tile = self.get_next_avail_tile()
-        next_tile_index = self.tiles.index(next_tile)
-        self.current_index = next_tile_index
+    def select_move(self, direction):  # Takes the player input and runs all checks to make sure the move is valid
+        x, y = self.get_destination_coords(direction)
+        if self.check_for_door(direction):  # If there's a door where the player tried to move
+            self.current_move_direction = direction
+            if self.check_cant_move_to_room(x, y):
+                if self.check_state_is_running():
+                    return print("Can only run into a discovered room")
+                else:
+                    self.draw_tile(x, y)
+                    self.state = "Rotating"
+            if self.check_for_room(x, y):
+                if self.check_indoor_outdoor_move(self.get_current_tile().type, self.get_tile_at(x, y).type):
+                    return print("Cannot Move this way")
+                else:
+                    self.move_player(x, y)
 
-        new_tile = self.tiles[self.current_index]
-        new_tile.prev_tile_num = current_tile_num
-        new_tile.set_is_placed()
-        new_tile.exits -= 1
+    def check_indoor_outdoor_move(self, current_type, move_type):  # Makes sure player can only move outside through
+        if current_type != move_type and self.get_current_tile().name != "Patio" or "Dining Room":  # the dining room
+            return False
 
-        return new_tile
+    # start willem checks
+    def check_direct_north(self, direction):
+        return direction == d.NORTH    
+    
+    def check_direct_south(self, direction):
+        return direction == d.SOUTH
 
-    def move_to_tile(self, tile_num):
-        move_tile = self.get_tile_by_tile_num(tile_num)
-        move_tile_index = self.tiles.index(move_tile)
-        self.current_index = move_tile_index
-        return move_tile
+    def check_direct_east(self, direction):
+        return direction == d.EAST
 
-    def add_health(self, health):
-        self.player.add_health(health)
+    def check_direct_west(self, direction):
+        return direction == d.WEST
 
-    def collect_item(self):
-        """Draws a devcard and see if player wants the time"""
+    def check_for_door(self, direction):
+        return direction in self.get_current_tile().doors
 
-        dev_card = self.dev_cards[self.dev_card_index]
-        item = dev_card.get_card_item()
-        return item
+    def check_coordinates_in_tiles(self, x, y):
+        return (x, y) not in self.tiles
 
-    def bury_totem(self):
-        self.is_totem_buried = True
-        # TODO print player doesnt have the totem
+    def check_direct_south_not_in_doors(self):
+        return d.SOUTH not in self.chosen_tile.doors
 
-    def collect_totem(self):
-        if self.has_totem:
+    def check_direct_north_not_in_doors(self):
+        return d.NORTH not in self.chosen_tile.doors
+
+    def check_direct_east_not_in_doors(self):
+        return d.EAST not in self.chosen_tile.doors
+
+    def check_direct_west_not_in_doors(self):
+        return d.WEST not in self.chosen_tile.doors
+    # end willem checks
+
+    def get_destination_coords(self, direction):  # Gets the x and y value of the proposed move
+        if self.check_direct_north(direction):
+            return self.player.get_x(), self.player.get_y() - 1
+        if self.check_direct_south(direction):
+            return self.player.get_x(), self.player.get_y() + 1
+        if self.check_direct_east(direction):
+            return self.player.get_x() + 1, self.player.get_y()
+        if self.check_direct_west(direction):
+            return self.player.get_x() - 1, self.player.get_y()
+
+    def check_for_room(self, x, y):  # Takes a move direction and checks if there is a room there
+        if self.check_coordinates_in_tiles(x, y):
+            return False
+        self.chosen_tile = self.tiles[(x, y)]
+        return True
+
+    def check_doors_align(self, direction):  # Makes sure when placing a tile that a door is facing where the player is
+        if self.check_tile_name_foyer(self.get_current_tile()):  # Trying to come from
+            return True
+        if self.check_direct_north(direction):
+            if self.check_direct_south_not_in_doors():
+                return False
+        if self.check_direct_south(direction):
+            if self.check_direct_north_not_in_doors():
+                return False
+        if self.check_direct_west(direction):
+            if self.check_direct_east_not_in_doors():
+                return False
+        elif self.check_direct_east(direction):
+            if self.check_direct_west_not_in_doors():
+                return False
+        return True
+
+    # start willem checks
+    def check_current_tile_entrance_north(self):
+        return self.get_current_tile().entrance == d.NORTH    
+    
+    def check_current_tile_entrance_south(self):
+        return self.get_current_tile().entrance == d.SOUTH   
+    
+    def check_current_tile_entrance_west(self):
+        return self.get_current_tile().entrance == d.WEST   
+    
+    def check_current_tile_entrance_east(self):
+        return self.get_current_tile().entrance == d.EAST
+
+    def check_choosen_tile_entrance_south(self):
+        return self.chosen_tile.entrance == d.SOUTH
+
+    def check_choosen_tile_entrance_north(self):
+        return self.chosen_tile.entrance == d.NORTH
+
+    def check_choosen_tile_entrance_east(self):
+        return self.chosen_tile.entrance == d.EAST
+
+    def check_choosen_tile_entrance_west(self):
+        return self.chosen_tile.entrance == d.WEST
+
+    def check_current_direct_north_and_entrance_south(self, tile):
+        return self.current_move_direction == d.NORTH and tile.entrance == d.SOUTH
+
+    def check_current_direct_south_and_entrance_north(self, tile):
+        return self.current_move_direction == d.SOUTH and tile.entrance == d.NORTH
+
+    def check_current_direct_east_and_entrance_west(self, tile):
+        return self.current_move_direction == d.EAST and tile.entrance == d.WEST
+
+    def check_current_direct_west_and_entrance_east(self, tile):
+        return self.current_move_direction == d.WEST and tile.entrance == d.EAST
+
+    # end willem checks
+
+    def check_entrances_align(self):  # Makes sure the dining room and patio entrances align
+        if self.check_current_tile_entrance_north():
+            if self.check_choosen_tile_entrance_south():
+                return True
+        if self.check_current_tile_entrance_south():
+            if self.check_choosen_tile_entrance_north():
+                return True
+        if self.check_current_tile_entrance_west():
+            if self.check_choosen_tile_entrance_east():
+                return True
+        if self.check_current_tile_entrance_east():
+            if self.check_choosen_tile_entrance_west():
+                return True
+        return False
+
+    def check_dining_room_has_exit(self):  # used to make sure the dining room exit is not facing an existing door
+        tile = self.chosen_tile
+        if tile.name == "Dining Room":
+            if self.check_current_direct_north_and_entrance_south(tile):
+                return False
+            if self.check_current_direct_south_and_entrance_north(tile):
+                return False
+            if self.check_current_direct_east_and_entrance_west(tile):
+                return False
+            if self.check_current_direct_west_and_entrance_east(tile):
+                return False
+        else:
+            return True
+
+
+    # start willem checks
+
+    def check_tile_outdoors(self, tile):
+        return tile.type == "Outdoor"
+
+    def check_current_tile_has_exits(self):
+        return self.get_current_tile().name == "Dining Room" or "Patio"
+
+    # end willem checks
+
+    def place_tile(self, x, y):  # Places the tile into the game map dictionary
+        tile = self.chosen_tile
+        self.tiles[(x, y)] = tile  # The location of the tile is stored as a tuple as the key of the dictionary entry
+        self.state = "Moving"  # And the tile is stored as the value
+        if self.check_tile_outdoors(tile):
+            self.outdoor_tiles.pop(self.outdoor_tiles.index(tile))
             return
-        self.has_totem = True
+        self.indoor_tiles.pop(self.indoor_tiles.index(tile))
 
-    def zombie_attack_handler(self, zombies, zombie_door):
+    def get_current_tile(self):  # returns the current tile that the player is at
+        return self.tiles[self.player.get_x(), self.player.get_y()]
 
-        player_attack = self.player.get_player_attack()
-        damage = player_attack - zombies
-        if zombie_door or self.check_current_room_evil_temple():
-            if damage < 0:
-                self.player.remove_health(abs(damage))
-            return zombies
+    def rotate(self):  # Rotates a selected tile one position clockwise during the Rotating state
+        tile = self.chosen_tile
+        tile.rotate_tile()
+        if self.check_tile_name_foyer(tile):
+            return
+        if self.check_current_tile_has_exits():
+            tile.rotate_entrance()
 
-        if self.view.check_player_runaway(damage, zombies):
-            self.runaway()
+    # start willem check
+
+    def check_list_len(self, list, length):
+        return len(list) == length
+
+    def check_time_is_up(self):
+        return self.get_time == 11
+
+    def check_event_type(self, event, type):
+        return event[0] == type
+
+    def check_event_consequence_less_than_one(self, event):
+        return event[1] < 1
+
+    def check_event_consequence_greater_than_one(self, event):
+        return event[1] > 1
+
+    def check_event_consequence_equal_to_one(self, event):
+        return event[1] == 1
+    # end willem check
+
+    # Call when player enters a room and draws a dev card
+    def trigger_dev_card(self, time):
+        if self.check_list_len(self.dev_cards, 0):
+            if self.check_time_is_up():
+                print("You have run out of time")
+                self.lose_game()
+                return
+
+            print("Reshuffling The Deck")
+            self.load_dev_cards()
+            self.time += 1
+
+        dev_card = self.dev_cards[0]
+        self.dev_cards.pop(0)
+        event = dev_card.get_event_at_time(time)  # Gets the event at the current time
+        if self.check_event_type(event, "Nothing"):
+            print("There is nothing in this room")
+            if len(self.chosen_tile.doors) == 1 and self.chosen_tile.name != "Foyer":
+                self.state = "Choosing Door"
+                self.get_suggested_command()
+                return
+            else:
+                self.state = "Moving"
+                self.get_suggested_command()
+            return
+        elif self.check_event_type(event, "Health"):  # Change health of player
+            print("There might be something in this room")
+            self.player.add_health(event[1])
+
+            if self.check_event_consequence_greater_than_one(event):
+                print(f"You gained {event[1]} health")
+                self.state = "Moving"
+            elif self.check_event_consequence_less_than_one(event):
+                print(f"You lost {event[1]} health")
+                self.state = "Moving"
+                if self.player.get_health() <= 0:
+                    self.lose_game()
+                    return
+            elif self.check_event_consequence_equal_to_one(event):
+                print("You didn't gain or lose any health")
+            if len(self.chosen_tile.doors) == 1 and self.chosen_tile.name != "Foyer":
+                self.state = "Choosing Door"
+            if self.get_current_tile().name == "Garden" or "Kitchen":
+                self.trigger_room_effect(self.get_current_tile().name)
+            else:
+                self.state = "Moving"
+                self.get_suggested_command()
+        elif self.check_event_type(event, "Item"):  # Add item to player's inventory if there is room
+            if len(self.dev_cards) == 0:
+                if self.get_time == 11:
+                    print("You have run out of time")
+                    self.lose_game()
+                    return
+                else:
+                    print("Reshuffling The Deck")
+                    self.load_dev_cards()
+                    self.time += 1
+            next_card = self.dev_cards[0]
+            print(f"There is an item in this room: {next_card.get_item()}")
+            if len(self.player.get_items()) < 2:
+                self.dev_cards.pop(0)
+                self.player.add_item(next_card.get_item(), next_card.charges)
+                print(f"You picked up the {next_card.get_item()}")
+                if len(self.chosen_tile.doors) == 1 and self.chosen_tile.name != "Foyer":
+                    self.state = "Choosing Door"
+                    self.get_suggested_command()
+                else:
+                    self.state = "Moving"
+                    self.get_suggested_command()
+            else:
+                self.room_item = [next_card.get_item(), next_card.charges]
+                response = input("You already have two items, do you want to drop one of them? (Y/N) ")
+                if response == "Y" or response == "y":
+                    self.state = "Swapping Item"
+                else: # If player doesn't want to drop item, just move on
+                    self.state = "Moving"
+                    self.room_item = None
+                    self.get_suggested_command()
+            if self.get_current_tile().name == "Garden" or "Kitchen":
+                self.trigger_room_effect(self.get_current_tile().name)
+        elif event[0] == "Zombies":  # Add zombies to the game, begin combat
+            print(f"There are {event[1]} zombies in this room, prepare to fight!")
+            self.current_zombies = int(event[1])
+            self.state = "Attacking"  # Create CMD for attacking zombies
+
+    # Call in CMD if state is attacking, *items is a list of items the player is going to use
+    def trigger_attack(self, *item):
+        player_attack = self.player.get_attack()
+        zombies = self.current_zombies
+        if len(item) == 2:  # If the player is using two items
+            if "Oil" in item and "Candle" in item:
+                print("You used the oil and the candle to attack the zombies, it kills all of them")
+                self.drop_item("Oil")
+                self.state = "Moving"
+                return
+            elif "Gasoline" in item and "Candle" in item:
+                print("You used the gasoline and the candle to attack the zombies, it kills all of them")
+                self.drop_item("Gasoline")
+                self.state = "Moving"
+                return
+            elif "Gasoline" in item and "Chainsaw" in item:
+                chainsaw_charge = self.player.get_item_charges("Chainsaw")
+                self.player.set_item_charges("Chainsaw", chainsaw_charge + 2)
+                player_attack += 3
+                self.drop_item("Gasoline")
+                self.player.use_item_charge("Chainsaw")
+            else:
+                print("These items cannot be used together, try again")
+                return
+        elif len(item) == 1:
+            if "Machete" in item:
+                player_attack += 2
+            elif "Chainsaw" in item:
+                if self.player.get_item_charges("Chainsaw") > 0:
+                    player_attack += 3
+                    self.player.use_item_charge("Chainsaw")
+                else:
+                    print("This item has no charges left")            
+            elif "Golf Club" in item or "Grisly Femur" in item or "Board With Nails" in item:
+                player_attack += 1
+            elif "Can of Soda" in item:
+                self.player.add_health(2)
+                self.drop_item("Can of Soda")
+                print("Used Can of Soda, gained 2 health")
+                return
+            elif "Oil" in item:
+                self.trigger_run(0)
+                return
+            else:
+                print("You cannot use this item right now, try again")
+                return
+
+        # Calculate damage on the player
+        damage = zombies - player_attack
+        if damage < 0:
+            damage = 0
+        print(f"You attacked the zombies, you lost {damage} health")
+        self.can_cower = True
+        self.player.add_health(-damage)
+        if self.player.get_health() <= 0:
+            self.lose_game()
+            return
+        else:
+            self.current_zombies = 0
+            if self.get_current_tile().name == "Garden" or "Kitchen":
+                self.trigger_room_effect(self.get_current_tile().name)
+            self.state = "Moving"
+
+    # Call if state is attacking and player wants to run away
+    def trigger_run(self, direction, health_lost=-1):
+        self.state = "Running"
+        self.select_move(direction)
+        if self.state == "Moving":
+            self.player.add_health(health_lost)
+            print(f"You run away from the zombies, and lose {health_lost} health")
+            self.can_cower = True
+            if self.get_current_tile().name == "Garden" or "Kitchen":
+                self.trigger_room_effect(self.get_current_tile().name)
+        else:
+            self.state = "Attacking"
+
+    def trigger_room_effect(self, room_name):  # Used for the Garden and Kitchen special room effects
+        if room_name == "Garden":
+            self.player.add_health(1)
+            print(f"After ending your turn in the {room_name} you have gained one health")
+            self.state ="Moving"
+        if room_name == "Kitchen":
+            self.player.add_health(1)
+            print(f"After ending your turn in the {room_name} you have gained one health")
+            self.state ="Moving"
+
+    # If player chooses to cower instead of move to a new room
+    def trigger_cower(self):
+        if self.can_cower:
+            self.player.add_health(3)
+            self.dev_cards.pop(0)
+            self.state = "Moving"
+            print("You cower in fear, gaining 3 health, but lose time with the dev card")
+        else:
+            return print("Cannot cower during a zombie door attack")
+
+    # Call when player wants to drop an item, and state is dropping item
+    def drop_item(self, old_item):
+        for item in self.player.get_items():
+            if item[0] == old_item:
+                self.player.remove_item(item)
+                print(f"You dropped the {old_item}")
+                self.state = "Moving"
+                return
+        print("That item is not in your inventory")
+
+    # Use an item in the players inventory
+    def use_item(self, *item):
+        if "Can of Soda" in item:
+            self.player.add_health(2)
+            self.drop_item("Can of Soda")
+            print("Used Can of Soda, gained 2 health")
+        elif "Gasoline" in item and "Chainsaw" in item:
+            chainsaw_charge = self.player.get_item_charges("Chainsaw")
+            self.player.set_item_charges("Chainsaw", chainsaw_charge + 2)
+            self.drop_item("Gasoline")
+        else:
+            print("These items cannot be used right now")
             return
 
-    def remove_health(self, health):
-        self.player.remove_health(health)
+    def choose_door(self, direction):  # used to select where a door will be made during a zombie door attack
+        if direction in self.chosen_tile.doors:
+            print("Choose a NEW door not an existing one")
+            return False
+        else:
+            self.chosen_tile.doors.append(direction)
+            self.current_zombies = 3
+            print(f"{self.current_zombies} Zombies have appeared, prepare for battle. Use the attack command to"
+                  f" fight or the run command to flee")
+            self.state = "Attacking"
+
+    def search_for_totem(self):  # Used to search for a totem in the evil temple, will force the user to draw a dev card
+        if self.get_current_tile().name == "Evil Temple":
+            if self.player.has_totem:
+                print("player already has the totem")
+                return
+            else:
+                self.trigger_dev_card(self.time)
+                self.player.found_totem()
+        else:
+            print("You cannot search for a totem in this room")
+
+    def bury_totem(self):  #
+        if self.get_current_tile().name == "Graveyard":
+            if self.player.has_totem:
+                self.trigger_dev_card(self.time)
+                if self.player.health != 0:
+                    print("You Won")
+                    self.state = "Game Over"
+        else:
+            print("Cannot bury totem here")
+
+    def check_for_dead_player(self):
+        if self.player.health <= 0:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def resolve_doors(n, e, s, w):
+        doors = []
+        if n == 1:
+            doors.append(d.NORTH)
+        if e == 1:
+            doors.append(d.EAST)
+        if s == 1:
+            doors.append(d.SOUTH)
+        if w == 1:
+            doors.append(d.WEST)
+        return doors
+
+    def lose_game(self):
+        self.state = "Game Over"

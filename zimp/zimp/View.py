@@ -1,123 +1,39 @@
+from pyfiglet import Figlet
+from termcolor import colored
+
 class View():
-    '''displays the cli for the game'''
+    def __init__(self):
+        self.figlet = Figlet(font='sblood')
 
-    def get_user_name(self):
-        return input("Please enter user name: ")
+    def heading(self, text):
+        print(colored(self.figlet.renderText(text), 'white', 'on_grey'))
 
-    def display_current_room_info(self, current_tile):
-        print(f"\nCURRENT TILE {current_tile.get_tile_name()} NUM EXITS = {current_tile.exits}")
+    def sub_heading(self, text):
+        print(colored(f'\n{text}', 'white', 'on_grey'))
 
-    def display_drawing_dev_card(self):
-        print("\nDrawing Dev Card...")
+    def message(self, text):
+        print(colored(f'\n{text}', 'green'))
 
-    def display_drawing_tile(self):
-        print("\nDrawing Tile...")
+    def warning(self, text):
+        print(colored(f'\n{text}', 'yellow'))
 
-    def display_player(self, player):
-        print(f"h {player.get_player_health()}", end=" | ")
-        print(f"d {player.get_player_attack()}")
-
-    def display_event(self, time ,event):
-        print(f"\n{time}:00 PM")
-        print(event.get_event_desc())
-
-    def display_tile(self, tile):
-        print(f"\n{tile.get_tile_name()}")
-        print(tile.get_tile_description())
-
-    def display_no_exits_in_current_room(self, tile_name):
-        print(f"\nTHERE ARE NO EXITS IN THE CURRENT ROOM {tile_name}")
-
-    def dsiplay_totem_collected(self):
-        print("\nTOTEM COLLECTED")
-
-    def warning_draw_devcard(self, ):
-        print(f"\nWARNING, INVOLES DRAWING DEVCARD")
-
-    def warning_shuffle_dev_card(self):
-        print("\nNO DEV CARDS AVALIBLE, SHUFFLING DEV CARDS")
-
-    def warning_no_totem(self):
-        print("\nNO TOTEM, FIND TOTEM TO COMPLETE GAME")
-
-    def warning_zombie_door(self):
-        print("\n0 EXITS AVALIBLE, CREATING ZOMBIE DOOR")
-
-    def check_use_item(self, item_name):
-        use_item = input(f"Do you want to use {item_name} (y/n)? ")
-
-        if use_item[0].lower() == "y":
-            return True
-        elif use_item[0].lower() == "n":
-            return False
-        else: 
-            print("Invalid input, please enter y or n\n")
-            self.check_use_item(item_name)
-
-    def check_draw_devcard(self):
-        devcard = input(f"\nDo you want to collect item (y/n)? ")
-        if devcard[0].lower() == "y":
-            return True
-        elif devcard[0].lower() == "n":
-            return False 
-        else: 
-            print("Invalid input, please enter y or n\n")
-            self.check_draw_devcard()
-
-    def check_add_item(self, player_item, item_name):
-        item = input(f"\nDo you want to add item {item_name} to {player_item} (y/n)? ")
-        if item[0].lower() == "y":
-            return True
-        elif item[0].lower() == "n":
-            return False
-        else: 
-            print("Invalid input, please enter y or n\n")
-            self.check_add_item(player_item, item_name)
-
-    def check_go_outside(self):
-        go_outside = input("\nWould you like to go outside (y/n)? ")
-        if go_outside[0] == "y":
-            print("going outside")
-            return True
-        elif go_outside[0] == "n":
-            return False
-        else:
-            print("Invalid input, please enter y or n\n")
-            self.check_go_outside()
-
-    def check_go_inside(self):
-        go_inside = input("\nWould you like to go back inside (y/n)? ")
-        if go_inside[0].lower == "y":
-            print("going inside")
-            return True
-        elif go_inside[0] == "n":
-            return False
-        else:
-            print("Invalid input, please enter y or n\n")
-            self.check_go_inside()
-
-    def check_player_runaway(self, zombies, damage):
-        if damage <= 0:
-            print(f"\n{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL NOT TAKE DAMAGE")
-        else:
-            print(f"\n{zombies} ZOMBIES APPEAR, IF YOU STAY YOU WILL TAKE {damage} DAMAGE")
-
-        runaway = input("\nDo you want to run away (y/n)? ")
-        if runaway[0].lower() == "y":
-            return True
-        elif runaway[0].lower() == "n":
-            return False
-        else: 
-            print("Invalid input, please enter y or n\n")
-            self.check_player_runaway(zombies, damage)
+    def error(self, text):
+        print(colored(f'\n{text}', 'red'))
     
-    def check_player_use_item(self, item):
-        use_item = input(f"\nWould you like to use {item.get_item_name()} (y/n)? ")
+    def display_start_heading(self):
+        self.heading('Starting')
+        self.sub_heading('Type help or "?" to list the commands or "start" to start the game')
 
-        if use_item[0].lower() == "y":
-            return True
-        elif use_item[0].lower() == "n":
-            return False
-        else:
-            print("Invalid input, please enter y or n\n")
-            self.check_player_use_item(item)
+    def display_player(self, player, time, state):
+        print(f'It is {time} pm \n'
+              f'The player currently has {player.get_health()} health \n'
+              f'The player currently has {player.get_attack()} attack \n'
+              f'The players items are {player.get_items()}\n'
+              f'The game state is {state}\n')
+    
+    def display_game(self, chosen_tile, state, avail_doors, suggest_cmd):
+        print(f'Current Room: {chosen_tile.name}\n'
+              f'Available Doors: {avail_doors}\n'
+              f'Current Player State: {state}\n'
+              f'Special Entrances : {chosen_tile.entrance}\n'
+              f'Suggested Command: {suggest_cmd}\n')
