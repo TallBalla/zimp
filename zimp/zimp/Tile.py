@@ -17,6 +17,9 @@ class Tile:
     def set_y(self, y):
         self.y = y
 
+    def get_entrance(self):
+        return self.entrance
+
     def change_door_position(self, idx, direction):
         self.doors[idx] = direction
 

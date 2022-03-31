@@ -98,7 +98,7 @@ class Game:
         >>> g.check_state_is_starting()
         False
 
-        >>> g.set_state('Starting')
+        >>> g.start_game()
         >>> g.check_state_is_starting()
         True
         '''
