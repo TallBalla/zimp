@@ -387,10 +387,11 @@ class Game:
     def place_tile(self, x, y):  # Places the tile into the game map dictionary
         tile = self.chosen_tile
         self.tiles[(x, y)] = tile  # The location of the tile is stored as a tuple as the key of the dictionary entry
+
         self.state = "Moving"  # And the tile is stored as the value
         if self.check_tile_outdoors(tile):
             self.outdoor_tiles.pop(self.outdoor_tiles.index(tile))
-            return
+            return  
         self.indoor_tiles.pop(self.indoor_tiles.index(tile))
 
     def get_current_tile(self):  # returns the current tile that the player is at

@@ -31,6 +31,26 @@ class GameTestMethods(unittest.TestCase):
         # Assert
         self.assertEqual(actual_state, expected_state)
 
+    def test_game_state_moving(self):
+        # Arrange
+        self.game.start_game_play()
+        self.game.place_tile(15,15)
+        # Act 
+        actual_state = self.game.get_state()
+        expected_state = 'Moving'
+        # Assert
+        self.assertEqual(actual_state, expected_state)
+
+    def test_game_state_dev_card(self):
+        # Arrange
+        self.game.start_game_play()
+        self.game.move_player(16,16)
+        # Act 
+        actual_state = self.game.get_state()
+        expected_state = 'Drawing Dev Card'
+        # Assert
+        self.assertEqual(actual_state, expected_state)
+
     def test_outside_tile_is_none(self):
         # Arrange
         # Act 
@@ -60,7 +80,6 @@ class GameTestMethods(unittest.TestCase):
         is_inside_tile_none = self.game.check_indoor_tiles_is_empty()
         # Assert
         self.assertFalse(is_inside_tile_none)
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
