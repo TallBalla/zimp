@@ -35,8 +35,11 @@ class View():
         print(f'\nCurrent Room: {chosen_tile.name}\n'
               f'Available Doors: {avail_doors}\n'
               f'Special Entrances : {chosen_tile.entrance}\n'
-              f'Current Player State: {state}\n'
+              f'Current State: {state}\n'
               f'Suggested Command: {suggest_cmd}\n')
+
+    def display_state(self, state):
+        print(f'Current State: {state}')
 
     def warning_dinning_room_exit(self):
         self.warning("Dining room entrance must face an empty tile")
