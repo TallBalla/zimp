@@ -23,8 +23,15 @@ class Commands(cmd.Cmd):
                                self.game.get_availiable_doors(),
                                self.game.get_suggested_command())
 
+    def move(self, direction):
+        if self.game.state == "Moving":
+            self.game.select_move(direction)
+            self.display_game_info()
+        else:
+            self.view.error_player_cannot_move()
+
     def do_start(self, line):
-        """Starts a new game"""
+        """Starts a new game or rests old game"""
         if self.game.get_state() == "Starting":
             print('\nGame already started, enter "place" to select tile rotation')
             return
@@ -41,7 +48,6 @@ class Commands(cmd.Cmd):
         if self.game.state == "Rotating":
             self.game.rotate()
             self.display_game_info()
-
         else:
             print("warning")
 
@@ -52,10 +58,10 @@ class Commands(cmd.Cmd):
                 self.game.place_tile(16, 16)
 
             elif self.game.check_dining_room_has_exit() is False:
-                return print("Dining room entrance must face an empty tile")
+                self.view.warning_dinning_room_exit()
             else:
                 if self.game.get_current_tile().name == "Dining Room" \
-                        and self.game.current_move_direction == self.game.get_current_tile().entrance:
+                    and self.game.current_move_direction == self.game.get_current_tile().entrance:
                     if self.game.check_entrances_align():
                         self.game.place_tile(self.game.chosen_tile.x,
                                              self.game.chosen_tile.y)
@@ -67,22 +73,23 @@ class Commands(cmd.Cmd):
                     self.game.move_player(self.game.chosen_tile.x, self.game.chosen_tile.y)
                 else:
                     print('You must have at least one door facing the way you came from,'
-                                  ' enter "rotate" to line up doors')
-            self.game.get_suggested_command()
+                          ' enter "rotate" to line up doors')
+        self.display_game_info()
 
+        
 
     def do_choose(self, direction):
         """When a zombie door attack is completed. Use this command to select an exit door with a valid direction"""
-        valid_inputs = ["n", "e", "s", "w"]
+        valid_inputs = ["north", "east", "south", "west"]
         if direction not in valid_inputs:
             return print("Input a valid direction. (Check choose help for more information)")
-        if direction == 'n':
+        if direction == 'north':
             direction = d.NORTH
-        if direction == "e":
+        if direction == "east":
             direction = d.EAST
-        if direction == "s":
+        if direction == "south":
             direction = d.SOUTH
-        if direction == "w":
+        if direction == "west":
             direction = d.WEST
         if self.game.state == "Choosing Door":
             self.game.can_cower = False
@@ -90,41 +97,21 @@ class Commands(cmd.Cmd):
         else:
             print("Cannot choose a door right now")
 
-    def do_n(self, line):
-        """Moves the player North"""
-        if self.game.state == "Moving":
-            self.game.select_move(d.NORTH)
-            self.display_game_info()
-            
-        else:
-            print("Player not ready to move")
+    def do_north(self, line):
+        """Moves the player North if in moving state"""
+        self.move(d.NORTH)
 
-    def do_s(self, line):
-        """Moves the player South"""
-        if self.game.state == "Moving":
-            self.game.select_move(d.SOUTH)
-            self.display_game_info()
+    def do_south(self, line):
+        """Moves the player South if in moving state"""
+        self.move(d.SOUTH)
 
-        else:
-            print("Player not ready to move")
+    def do_east(self, line):
+        """Moves the player East if in moving state"""
+        self.move(d.EAST)
 
-    def do_e(self, line):
-        """Moves the player East"""
-        if self.game.state == "Moving":
-            self.game.select_move(d.EAST)
-            self.display_game_info()
-
-        else:
-            print("Player not ready to move")
-
-    def do_w(self, line):
-        """Moves the player West"""
-        if self.game.state == "Moving":
-            self.game.select_move(d.WEST)
-            self.display_game_info()
-
-        else:
-            print("Player not ready to move")
+    def do_west(self, line):
+        """Moves the player West if in moving state"""
+        self.move(d.WEST)
 
     def do_save(self, line):
         """Takes a filepath and saves the game to a file"""
@@ -138,9 +125,10 @@ class Commands(cmd.Cmd):
                 pickle.dump(self.game, f)
 
     def do_load(self, name):
-        """Takes a filepath and loads the game from a file"""
+        """\nTakes a filepath and loads the game from a file 
+        Useage: load <file name>\n"""
         if not name:
-            print("Must enter a valid file name")
+            self.view.warning_enter_valid_file_name()
             return
 
         file_name = name + '.pickle'
@@ -149,9 +137,9 @@ class Commands(cmd.Cmd):
                 self.game = pickle.load(f)
                 self.game.get_game()
         except FileNotFoundError:
-            print("No File with this name exists")
+            self.view.error_file_does_not_exist(file_name)
 
-    def do_attack(self, line):
+    def do_fight(self, line):
         """Player attacks the zombies"""
         arg1 = ''
         arg2 = 0
@@ -171,17 +159,17 @@ class Commands(cmd.Cmd):
             if len(self.game.chosen_tile.doors) == 1\
                and self.game.chosen_tile.name != "Foyer":
                 self.game.state = "Choosing Door"
-                self.game.get_suggested_command()
+                self.display_game_info()
             if self.game.state == "Game Over":
                 print("You lose, game over, you have succumbed to the zombie horde")
                 print('To play again, type "start"')
             else:
-                self.game.get_suggested_command()
+                self.display_game_info()
         else:
             print("You cannot attack right now")
 
-    def do_use(self, line):
-        """Player uses item"""
+    def do_item(self, line):
+        """Player uses item if item equiped"""
         arg1 = ''
         arg2 = 0
         if "," in line:
@@ -204,7 +192,7 @@ class Commands(cmd.Cmd):
         """Drops an item from your hand"""
         if self.game.state != "Game Over":
             self.game.drop_item(item)
-            self.game.get_suggested_command()
+            self.display_game_info()
     
     def do_swap(self, line):
         """Swaps an item in you hand with the one in the room"""
@@ -213,7 +201,7 @@ class Commands(cmd.Cmd):
             self.game.player.add_item(self.game.room_item[0],
                                      self.game.room_item[1])
             self.game.room_item = None
-            self.game.get_suggested_command()
+            self.display_game_info()
 
     def do_draw(self, line):
         """Draws a new development card (Must be done after evey move)"""
@@ -229,43 +217,45 @@ class Commands(cmd.Cmd):
         self.game.player.add_item("Candle", 1)
 
     def do_runaway(self, direction):
-        """Given a direction will flee attacking zombies at a price of one health"""
+        """\nUse when attacked and take only 1 damage
+        Directions: north, south, east, west
+        Useage: runaway <direction>\n"""
+        if direction is None:
+             self.view.warning_invalid_run_direction()
+
         if self.game.state == "Attacking":
-            if direction == 'n':
+            if direction == 'north':
                 self.game.trigger_run(d.NORTH)
-            elif direction == 'e':
+            elif direction == 'east':
                 self.game.trigger_run(d.EAST)
-            elif direction == 's':
+            elif direction == 'south':
                 self.game.trigger_run(d.SOUTH)
-            elif direction == 'w':
+            elif direction == 'west':
                 self.game.trigger_run(d.WEST)
-            else:
-                print("Cannot run that direction")
-            if len(self.game.get_current_tile().doors) == 1\
+               
+            if len(self.game.get_current_tile().doors) == 1 \
                and self.game.chosen_tile.name != "Foyer":
                 self.game.state = "Choosing Door"
-                self.game.get_suggested_command()
+                self.display_game_info()
         else:
-            print("Cannot run when not being attacked")
+            self.view.error_cannot_runaway()
 
     def do_cower(self, line):
-        """When attacked use this command to cower. 
-        You will take no damage but will advance the time"""
+        """When attacked use this command to cower. You will take no damage but will advance the time"""
         if self.game.state == "Moving":
             self.game.trigger_cower()
         else:
-            print("Cannot cower while right now")
+            self.view.error_cannot_cower()
 
     def do_search(self, line):
-        """Searches for the zombie totem. 
-        (Player must be in the evil temple and will have to resolve a dev card)"""
+        """Searches for the zombie totem. (Player must be in the evil temple and will have to resolve a dev card)"""
         if self.game.state == "Moving":
             self.game.search_for_totem()
         else:
-            print("Cannot search currently")
+            self.view.error_cannot_search()
 
     def do_bury(self, line):
-        """Buries the totem. (Player must be in the graveyard and will have to resolve a dev card)"""
+        """Buries the totem when in moving state"""
         if self.game.state == "Moving":
             self.game.bury_totem()
         else:
@@ -279,7 +269,7 @@ class Commands(cmd.Cmd):
         """Exits the game without saving"""
         return True
 
-    def do_status(self, line):
+    def do_player(self, line):
         """Shows the status of the player"""
         player = self.game.get_player()
         time = self.game.get_time()
