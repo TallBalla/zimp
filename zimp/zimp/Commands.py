@@ -57,9 +57,11 @@ class Commands(cmd.Cmd):
                 if self.game.get_current_tile().name == "Dining Room" \
                         and self.game.current_move_direction == self.game.get_current_tile().entrance:
                     if self.game.check_entrances_align():
-                        self.game.place_tile(self.game.chosen_tile.x, self.game.chosen_tile.y)
-                        self.game.move_player(self.game.chosen_tile.x, self.game.chosen_tile.y)    
-                    print("Dining room and Patio entrances dont align")   
+                        self.game.place_tile(self.game.chosen_tile.x,
+                                             self.game.chosen_tile.y)
+                        self.game.move_player(self.game.chosen_tile.x,
+                                              self.game.chosen_tile.y)
+                    print("Dining room and Patio entrances dont align")
                 elif self.game.check_doors_align(self.game.current_move_direction):
                     self.game.place_tile(self.game.chosen_tile.x, self.game.chosen_tile.y)
                     self.game.move_player(self.game.chosen_tile.x, self.game.chosen_tile.y)
@@ -166,7 +168,8 @@ class Commands(cmd.Cmd):
             elif arg1 != '' and arg2 != 0:
                 self.game.trigger_attack(arg1, arg2)
 
-            if len(self.game.chosen_tile.doors) == 1 and self.game.chosen_tile.name != "Foyer":
+            if len(self.game.chosen_tile.doors) == 1\
+               and self.game.chosen_tile.name != "Foyer":
                 self.game.state = "Choosing Door"
                 self.game.get_suggested_command()
             if self.game.state == "Game Over":
@@ -207,7 +210,8 @@ class Commands(cmd.Cmd):
         """Swaps an item in you hand with the one in the room"""
         if self.game.state == "Swapping Item":
             self.game.drop_item(line)
-            self.game.player.add_item(self.game.room_item[0], self.game.room_item[1])
+            self.game.player.add_item(self.game.room_item[0],
+                                     self.game.room_item[1])
             self.game.room_item = None
             self.game.get_suggested_command()
 
@@ -237,21 +241,24 @@ class Commands(cmd.Cmd):
                 self.game.trigger_run(d.WEST)
             else:
                 print("Cannot run that direction")
-            if len(self.game.get_current_tile().doors) == 1 and self.game.chosen_tile.name != "Foyer":
+            if len(self.game.get_current_tile().doors) == 1\
+               and self.game.chosen_tile.name != "Foyer":
                 self.game.state = "Choosing Door"
                 self.game.get_suggested_command()
         else:
             print("Cannot run when not being attacked")
 
     def do_cower(self, line):
-        """When attacked use this command to cower. You will take no damage but will advance the time"""
+        """When attacked use this command to cower. 
+        You will take no damage but will advance the time"""
         if self.game.state == "Moving":
             self.game.trigger_cower()
         else:
             print("Cannot cower while right now")
 
     def do_search(self, line):
-        """Searches for the zombie totem. (Player must be in the evil temple and will have to resolve a dev card)"""
+        """Searches for the zombie totem. 
+        (Player must be in the evil temple and will have to resolve a dev card)"""
         if self.game.state == "Moving":
             self.game.search_for_totem()
         else:
