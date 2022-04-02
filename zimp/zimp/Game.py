@@ -56,8 +56,8 @@ class Game:
     def check_dev_cards_is_empty(self):
         return len(self.dev_cards) == 0
 
-    def check_game_map_is_empty(self):
-        return len(self.game_map) == 0
+    def check_tiles_is_empty(self):
+        return len(self.tiles) == 0
     
     def check_indoor_tiles_is_empty(self):
         return len(self.indoor_tiles) == 0
@@ -65,11 +65,16 @@ class Game:
     def check_outdoor_tiles_is_empty(self):
         return len(self.outdoor_tiles) == 0 
 
+    def check_tile_rotated(self, direction):
+        return direction in self.get_current_tile().doors
     # end Willem checks
 
     # start willem implemented
     def get_state(self):
         return self.state
+
+    def get_dev_cards(self):
+        return self.dev_cards
 
     def start_game(self):
         self.state = 'Starting'
