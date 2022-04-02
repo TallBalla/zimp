@@ -1,14 +1,15 @@
 from OutdoorTile import OutdoorTile
 from IndoorTile import IndoorTile
-from Player import Player
 from DevCard import DevCard
-from Tile import Tile
+from Player import Player
 
 from directions import Direction as d
-import pandas as pd
 
-import pickle
+import pandas as pd
 import random
+import doctest
+
+
 
 class Game:
     def __init__(self, player, time=9, game_map=None, indoor_tiles=None, outdoor_tiles=None, chosen_tile=None,
@@ -39,42 +40,133 @@ class Game:
         return tile.name == 'Foyer'
 
     def check_state_is_moving(self):
+        '''
+        Checks current state is moving
+
+        >>> g.check_state_is_moving()
+        False
+
+        >>> g.set_state('Moving')
+        >>> g.check_state_is_moving()
+        True
+        '''
         return self.state == 'Moving'
 
     def check_state_is_rotating(self):
+        '''
+        Check state is rotating
+
+        >>> g.check_state_is_rotating()
+        False
+
+        >>> g.set_state('Rotating')
+        >>> g.check_state_is_rotating()
+        True
+        '''
         return self.state == 'Rotating'
 
     def check_state_is_choosing_door(self):
+        '''
+        Check state is choosing door
+
+        >>> g.check_state_is_choosing_door()
+        False
+
+        >>> g.set_state('Choosing Door')
+        >>> g.check_state_is_choosing_door()
+        True
+        '''
         return self.state == 'Choosing Door'
 
     def check_state_is_drawing_dev_card(self):
+        '''
+        Check state is drawing dev card
+
+        >>> g.check_state_is_drawing_dev_card()
+        False
+
+        >>> g.set_state('Drawing Dev Card')
+        >>> g.check_state_is_drawing_dev_card()
+        True
+        '''
         return self.state == 'Drawing Dev Card'
 
     def check_state_is_starting(self):
+        '''
+        Check state is starting
+
+        >>> g.check_state_is_starting()
+        False
+
+        >>> g.start_game()
+        >>> g.check_state_is_starting()
+        True
+        '''
         return self.state == 'Starting'
     
+    def check_state_game_over(self):
+        '''
+        Check state is Game over
+
+        >>> g.check_state_game_over()
+        False
+
+        >>> g.lose_game()
+        >>> g.check_state_game_over()
+        True
+        '''
+        return self.state == 'Game Over'
+
     def check_dev_cards_is_empty(self):
+        '''
+        Check draw card is empty
+
+        >>> g.check_dev_cards_is_empty()
+        True
+
+        >>> g.load_dev_cards()
+        >>> g.check_dev_cards_is_empty()
+        False
+        '''
         return len(self.dev_cards) == 0
 
-    def check_tiles_is_empty(self):
-        return len(self.tiles) == 0
+    def check_game_map_is_empty(self):
+        return len(self.game_map) == 0
     
     def check_indoor_tiles_is_empty(self):
+        '''
+        Check indoor tile populated
+        >>> g = Game(Player())
+        >>> g.check_indoor_tiles_is_empty()
+        True
+
+        >>> g.load_tiles()
+        >>> g.check_indoor_tiles_is_empty()
+        False
+        '''
         return len(self.indoor_tiles) == 0
 
     def check_outdoor_tiles_is_empty(self):
+        '''
+        Check outdoor tile populated
+        >>> g = Game(Player())
+        >>> g.check_outdoor_tiles_is_empty()
+        True
+
+        >>> g.load_tiles()
+        >>> g.check_outdoor_tiles_is_empty()
+        False
+        '''
         return len(self.outdoor_tiles) == 0 
 
-    def check_tile_rotated(self, direction):
-        return direction in self.get_current_tile().doors
     # end Willem checks
 
     # start willem implemented
     def get_state(self):
         return self.state
 
-    def get_dev_cards(self):
-        return self.dev_cards
+    def set_state(self, state):
+        self.state = state
 
     def start_game(self):
         self.state = 'Starting'
@@ -689,3 +781,7 @@ class Game:
 
     def lose_game(self):
         self.state = "Game Over"
+
+
+if __name__ == "__main__":
+    doctest.testmod(extraglobs={'g': Game(Player())}, verbose = True)

@@ -30,6 +30,11 @@ class Commands(cmd.Cmd):
         else:
             self.view.error_player_cannot_move()
 
+    def do_state(self, linke):
+        """Gets the state of the Game"""
+        state = self.game.get_state()
+        self.view.display_state(state)
+
     def do_start(self, line):
         """Starts a new game or rests old game"""
         if self.game.get_state() == "Starting":
