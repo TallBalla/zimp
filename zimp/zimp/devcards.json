@@ -1,0 +1,92 @@
+[
+  {
+    "items": "Oil",
+    "event_one": "Nothing",
+    "consquence_one": "None",
+    "event_two": "Item",
+    "consquence_two": "None",
+    "event_three": "Zombies",
+    "consquence_three": "6",
+    "charges": "1"
+  },
+  {
+    "items": "Gasoline",
+    "event_one": "Zombies,",
+    "consquence_one": "4",
+    "event_two": "Health",
+    "consquence_two": "-1",
+    "event_three": "Item",
+    "consquence_three": "None",
+    "charges": "1"
+  },
+  {
+    "items": "Board With Nails",
+    "event_one": "Item",
+    "consquence_one": "None",
+    "event_two": "Zombies",
+    "consquence_two": "4",
+    "event_three": "Health",
+    "consquence_three": "-1",
+    "charges": "1000"
+  },
+  {
+    "items": "Machete",
+    "event_one": "Zombies",
+    "consquence_one": "4",
+    "event_two": "Health",
+    "consquence_two": "-1",
+    "event_three": "Zombies",
+    "consquence_three": "6",
+    "charges": "1000"
+  },
+  {
+    "items": "Grisly Fermur",
+    "event_one": "Item",
+    "consquence_one": "None",
+    "event_two": "Zombies",
+    "consquence_two": "5",
+    "event_three": "Health",
+    "consquence_three": "-1",
+    "charges": "1000"
+  },
+  {
+    "items": "Golf Club",
+    "event_one": "Health",
+    "consquence_one": "-1",
+    "event_two": "Zombies",
+    "consquence_two": "4",
+    "event_three": "Nothing",
+    "consquence_three": "None",
+    "charges": "1000"
+  },
+  {
+    "items": "Chainsaw",
+    "event_one": "Zombies",
+    "consquence_one": "3",
+    "event_two": "Nothing",
+    "consquence_two": "None",
+    "event_three": "Zombies",
+    "consquence_three": "5",
+    "charges": "2"
+  },
+  {
+    "items": "Can of Soda",
+    "event_one": "Health",
+    "consquence_one": "1",
+    "event_two": "Item",
+    "consquence_two": "None",
+    "event_three": "Zombies",
+    "consquence_three": "4",
+    "charges": "1"
+  },
+  {
+    "items": "Candle",
+    "event_one": "Nothing",
+    "consquence_one": "None",
+    "event_two": "Health",
+    "consquence_two": "1",
+    "event_three": "Zombies",
+    "consquence_three": "4",
+    "charges": "1000"
+  }
+]

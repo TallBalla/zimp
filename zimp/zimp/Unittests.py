@@ -12,10 +12,12 @@ class GameTestMethods(unittest.TestCase):
         self.game.place_tile(16, 16)
         self.game.select_move(d.WEST)
         self.game.move_player(15,16)
-
-    def rotate_foyer(self):
+        
+    def rotate_foyer(self, amount):
         self.game.start_game_play()
-        self.game.rotate()
+        for i in range(0, amount):
+            self.game.rotate()
+
         self.game.place_tile(16, 16)
 
     def test_game_state_none(self):
@@ -130,24 +132,7 @@ class GameTestMethods(unittest.TestCase):
         expected_tile_name = 'Foyer'
         # Assert
         self.assertEqual(actual_tile_name, expected_tile_name)
-
-    def test_foyer_not_west_after_rotate(self):
-        # Arrange
-        self.rotate_foyer()
-        current_tile = self.game.get_current_tile()
-        # Act 
-        has_tile_rotated = self.game.check_tile_rotated(d.WEST)
-        # Assert
-        self.assertFalse(has_tile_rotated)
-
-    def test_foyer_north_after_rotate(self):
-        # Arrange
-        self.rotate_foyer()
-        current_tile = self.game.get_current_tile()
-        # Act 
-        has_tile_rotated = self.game.check_tile_rotated(d.NORTH)
-        # Assert
-        self.assertTrue(has_tile_rotated)
-
+        
 if __name__ == '__main__':
     unittest.main(verbosity=2)
+    
