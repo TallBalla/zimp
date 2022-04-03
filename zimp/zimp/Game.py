@@ -2,6 +2,7 @@ from OutdoorTile import OutdoorTile
 from IndoorTile import IndoorTile
 from DevCard import DevCard
 from Player import Player
+from Database import Database
 
 from directions import Direction as d
 
@@ -34,6 +35,7 @@ class Game:
         self.current_zombies = 0
         self.can_cower = can_cower
         self.room_item = None
+        self.db = Database("zimp")
 
     # start Willem checks
     def check_tile_name_foyer(self, tile):
@@ -130,8 +132,15 @@ class Game:
         '''
         return len(self.dev_cards) == 0
 
-    def check_game_map_is_empty(self):
-        return len(self.game_map) == 0
+    def check_tiles_is_empty(self):
+        '''
+        Check tiles is empty
+        
+        >>> g.check_tiles_is_empty()
+        True
+
+        '''
+        return len(self.tiles) == 0
     
     def check_indoor_tiles_is_empty(self):
         '''
@@ -209,8 +218,7 @@ class Game:
     def get_chosen_tile(self):
         return self.chosen_tile
 
-    # Loads tiles from excel file
-    def load_tiles(self):  # Needs Error handling in this method
+    def load_tiles(self):
         excel_data = pd.read_excel('Tiles.xlsx')
         tiles = []
         for name in excel_data.iterrows():
@@ -277,19 +285,17 @@ class Game:
             tile.set_x(x)
             tile.set_y(y)
             self.chosen_tile = tile
-
+            
     # Loads development cards from excel file
     def load_dev_cards(self):
-        #TODO complete the exception for try catch
+        card_data = self.db.create_devcards()
 
-        card_data = pd.read_excel('DevCards.xlsx')
-
-        for card in card_data.iterrows():
-            item = card[1][0]
-            event_one = (card[1][1], card[1][2])
-            event_two = (card[1][3], card[1][4])
-            event_three = (card[1][5], card[1][6])
-            charges = card[1][7]
+        for card in self.db.select_data("devcards"):
+            item = card[0]
+            event_one = (card[1], card[2])
+            event_two = (card[3], card[4])
+            event_three = (card[5], card[6])
+            charges = card[7]
             dev_card = DevCard(item, charges, event_one, event_two, event_three)
             self.dev_cards.append(dev_card)
         random.shuffle(self.dev_cards)
@@ -339,9 +345,27 @@ class Game:
 
     # start willem checks
     def check_direct_north(self, direction):
+        '''
+        Checks the direction is north
+        
+        >>> g.check_direct_north(d.SOUTH)
+        False
+        
+        >>> g.check_direct_north(d.NORTH)
+        True
+        '''
         return direction == d.NORTH    
     
     def check_direct_south(self, direction):
+        '''
+        Checks the direction is south
+        
+        >>> g.check_direct_south(d.NORTH)
+        False
+        
+        >>> g.check_direct_south(d.SOUTH)
+        True
+        '''
         return direction == d.SOUTH
 
     def check_direct_east(self, direction):

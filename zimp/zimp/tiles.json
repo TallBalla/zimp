@@ -1,0 +1,146 @@
+[
+  {
+    "Name": "Graveyard",
+    "Effect": "Bury Totem",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 0,
+    "West": 0
+  },
+  {
+    "Name": "Yard",
+    "Effect": "None",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Sitting Area",
+    "Effect": "None",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Yard",
+    "Effect": "None",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Yard",
+    "Effect": "None",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Patio",
+    "Effect": "None",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 0,
+    "West": 1
+  },
+  {
+    "Name": "Garage",
+    "Effect": "None",
+    "Type": "Outdoor",
+    "North": 0,
+    "East": 1,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Garden",
+    "Effect": "Health",
+    "Type": "Outdoor",
+    "North": 1,
+    "East": 1,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Bathroom",
+    "Effect": "None",
+    "Type": "Indoor",
+    "North": 0,
+    "East": 0,
+    "South": 0,
+    "West": 1
+  },
+  {
+    "Name": "Family Room",
+    "Effect": "None",
+    "Type": "Indoor",
+    "North": 1,
+    "East": 0,
+    "South": 1,
+    "West": 1
+  },
+  {
+    "Name": "Kitchen",
+    "Effect": "Health",
+    "Type": "Indoor",
+    "North": 1,
+    "East": 0,
+    "South": 1,
+    "West": 1
+  },
+  {
+    "Name": "Dining Room",
+    "Effect": "None",
+    "Type": "Indoor",
+    "North": 1,
+    "East": 1,
+    "South": 1,
+    "West": 1
+  },
+  {
+    "Name": "Storage",
+    "Effect": "Draw",
+    "Type": "Indoor",
+    "North": 0,
+    "East": 0,
+    "South": 0,
+    "West": 1
+  },
+  {
+    "Name": "Bedroom",
+    "Effect": "None",
+    "Type": "Indoor",
+    "North": 0,
+    "East": 0,
+    "South": 1,
+    "West": 1
+  },
+  {
+    "Name": "Evil Temple",
+    "Effect": "Find Totem",
+    "Type": "Indoor",
+    "North": 1,
+    "East": 0,
+    "South": 1,
+    "West": 0
+  },
+  {
+    "Name": "Foyer",
+    "Effect": "None",
+    "Type": "Indoor",
+    "North": 0,
+    "East": 0,
+    "South": 0,
+    "West": 1
+  }
+]
