@@ -10,8 +10,6 @@ import pandas as pd
 import random
 import doctest
 
-
-
 class Game:
     def __init__(self, player, time=9, game_map=None, indoor_tiles=None, outdoor_tiles=None, chosen_tile=None,
                  dev_cards=None, state=None, current_move_direction=None, can_cower=True):
