@@ -369,9 +369,27 @@ class Game:
         return direction == d.SOUTH
 
     def check_direct_east(self, direction):
+        '''
+        Checks the direction is east
+        
+        >>> g.check_direct_east(d.WEST)
+        False
+        
+        >>> g.check_direct_east(d.EAST)
+        True
+        '''
         return direction == d.EAST
 
     def check_direct_west(self, direction):
+        '''
+        Checks the direction is west
+        
+        >>> g.check_direct_west(d.EAST)
+        False
+
+        >>> g.check_direct_west(d.WEST)
+        True
+        '''
         return direction == d.WEST
 
     def check_for_door(self, direction):
