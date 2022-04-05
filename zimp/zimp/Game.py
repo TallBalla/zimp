@@ -224,11 +224,8 @@ class Game:
         return self.chosen_tile
 
     def load_tiles(self):
-        excel_data = pd.read_excel('Tiles.xlsx')
-        tiles = []
-        for name in excel_data.iterrows():
-            tiles.append(name[1].tolist())
-        for tile in tiles:
+        self.db.create_tiles()
+        for tile in self.db.select_data('tiles'):
             doors = self.resolve_doors(tile[3], tile[4], tile[5], tile[6])
             if self.check_tile_outdoors_index(2, tile):
                 new_tile = OutdoorTile(tile[0], tile[1], doors)
@@ -293,7 +290,7 @@ class Game:
             
     # Loads development cards from excel file
     def load_dev_cards(self):
-        card_data = self.db.create_devcards()
+        self.db.create_devcards()
 
         for card in self.db.select_data("devcards"):
             item = card[0]
