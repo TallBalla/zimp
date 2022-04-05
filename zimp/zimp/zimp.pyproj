@@ -22,18 +22,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Commands.py" />
-    <Compile Include="Database.py" />
-    <Compile Include="DevCard.py" />
+    <Compile Include="commands.py" />
+    <Compile Include="database.py" />
+    <Compile Include="devCard.py" />
     <Compile Include="directions.py" />
-    <Compile Include="Game.py" />
-    <Compile Include="IndoorTile.py" />
+    <Compile Include="game.py" />
+    <Compile Include="indoorTile.py" />
     <Compile Include="main.py" />
-    <Compile Include="OutdoorTile.py" />
-    <Compile Include="Player.py" />
+    <Compile Include="outdoorTile.py" />
+    <Compile Include="player.py" />
     <Compile Include="tile.py" />
-    <Compile Include="Unittests.py" />
-    <Compile Include="View.py" />
+    <Compile Include="gameUnittests.py" />
+    <Compile Include="view.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
