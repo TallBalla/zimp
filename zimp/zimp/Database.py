@@ -72,7 +72,7 @@ class Database():
             self.conn.rollback()       
         finally:
             self.conn.commit()
-            
+
     def select_data(self, table_name):
         cur = self.conn.cursor()
         sql = "SELECT * FROM {}".format(table_name)

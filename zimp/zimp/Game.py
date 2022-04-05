@@ -36,7 +36,7 @@ class Game:
         self.can_cower = can_cower
         self.room_item = None
         self.db = Database("zimp")
-
+    
     # start Willem checks
     def check_tile_name_foyer(self, tile):
         return tile.name == 'Foyer'
