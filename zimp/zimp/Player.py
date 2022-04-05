@@ -25,9 +25,15 @@ class Player:
     def add_health(self, health):
         self.health += health
 
+    def remove_health(self, health):
+        self.health -= health
+           
     def add_attack(self, attack):
         self.attack += attack
 
+    def remove_attack(self, attack):
+        self.attack -= attack
+        
     def get_items(self):
         return self.items
 
@@ -64,3 +70,6 @@ class Player:
 
     def get_y(self):
         return self.y
+
+    def get_has_totem(self):
+        return self.has_totem

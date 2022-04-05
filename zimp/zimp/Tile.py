@@ -17,8 +17,17 @@ class Tile:
     def set_y(self, y):
         self.y = y
 
+    def get_x(self):
+        return self.x
+    
+    def get_y(self):
+        return self.y
+        
     def get_entrance(self):
         return self.entrance
+
+    def get_name(self):
+        return self.name
 
     def change_door_position(self, idx, direction):
         self.doors[idx] = direction

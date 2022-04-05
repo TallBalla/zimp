@@ -10,8 +10,6 @@ import pandas as pd
 import random
 import doctest
 
-
-
 class Game:
     def __init__(self, player, time=9, game_map=None, indoor_tiles=None, outdoor_tiles=None, chosen_tile=None,
                  dev_cards=None, state=None, current_move_direction=None, can_cower=True):
@@ -215,6 +213,13 @@ class Game:
     def get_time(self):
         return self.time
 
+    # start willem implemented
+    def set_time(self, time):
+        self.time = time
+    
+
+    # end willem implemented
+
     def get_chosen_tile(self):
         return self.chosen_tile
 
@@ -369,9 +374,27 @@ class Game:
         return direction == d.SOUTH
 
     def check_direct_east(self, direction):
+        '''
+        Checks the direction is east
+        
+        >>> g.check_direct_east(d.WEST)
+        False
+        
+        >>> g.check_direct_east(d.EAST)
+        True
+        '''
         return direction == d.EAST
 
     def check_direct_west(self, direction):
+        '''
+        Checks the direction is west
+        
+        >>> g.check_direct_west(d.EAST)
+        False
+
+        >>> g.check_direct_west(d.WEST)
+        True
+        '''
         return direction == d.WEST
 
     def check_for_door(self, direction):
@@ -529,10 +552,29 @@ class Game:
     # start willem check
 
     def check_list_len(self, list, length):
+        '''
+        Checks if the list has the correct length
+        
+        >>> g.check_list_len([], 4)
+        False
+        
+        >>> g.check_list_len([1, 2, 3], 3)
+        True
+        '''
         return len(list) == length
 
     def check_time_is_up(self):
-        return self.get_time == 11
+        '''
+        Checks if the time is up
+        
+        >>> g.check_time_is_up()
+        False
+        
+        >>> g.set_time(int(11))
+        >>> g.check_time_is_up()
+        True
+        '''
+        return self.get_time() == 11
 
     def check_event_type(self, event, type):
         return event[0] == type
@@ -596,7 +638,7 @@ class Game:
                 self.get_suggested_command()
         elif self.check_event_type(event, "Item"):  # Add item to player's inventory if there is room
             if len(self.dev_cards) == 0:
-                if self.get_time == 11:
+                if self.get_time() == 11:
                     print("\nYou have run out of time")
                     self.lose_game()
                     return
