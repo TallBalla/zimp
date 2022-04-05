@@ -1,4 +1,3 @@
-# Development cards for the game. Played when the player moves into the room.
 class DevCard:
     def __init__(self, item, charges, event_one, event_two, event_three):
         self.item = item
@@ -23,8 +22,3 @@ class DevCard:
 
     def get_charges(self):
         return self.charges
-
-    # Could be removed, prints the card outs
-    def __str__(self):
-        return "Item: {}, Event 1: {}, Event 2: {}, Event 3: {}".format(self.item, self.event_one, self.event_two,
-                                                                        self.event_three)

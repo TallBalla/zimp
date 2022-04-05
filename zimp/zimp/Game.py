@@ -1,7 +1,7 @@
-from OutdoorTile import OutdoorTile
-from IndoorTile import IndoorTile
+from outdoorTile import OutdoorTile
+from indoorTile import IndoorTile
 from DevCard import DevCard
-from Player import Player
+from player import Player
 from Database import Database
 
 from directions import Direction as d
@@ -10,7 +10,7 @@ import pandas as pd
 import random
 import doctest
 
-class Game:
+class Game():
     def __init__(self, player, time=9, game_map=None, indoor_tiles=None, outdoor_tiles=None, chosen_tile=None,
                  dev_cards=None, state=None, current_move_direction=None, can_cower=True):
         if indoor_tiles is None:

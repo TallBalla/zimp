@@ -1,8 +1,8 @@
 import unittest
 from Game import Game
-from Player import Player
+from player import Player
+from tile import Tile
 from directions import Direction as d
-from Tile import Tile
 
 
 class GameTestMethods(unittest.TestCase):

@@ -1,12 +1,11 @@
 import cmd
 import pickle
-from Player import Player
 import os
-
 from Game import Game
+from player import Player
+from View import View
 from directions import Direction as d
 
-from View import View
 
 class Commands(cmd.Cmd):
 
@@ -24,6 +23,8 @@ class Commands(cmd.Cmd):
                                self.game.get_suggested_command())
 
     def move(self, direction):
+        """\nUse when in moving state
+        Directions: north, south, east, west\n"""
         if self.game.state == "Moving":
             self.game.select_move(direction)
             self.display_game_info()
@@ -31,12 +32,12 @@ class Commands(cmd.Cmd):
             self.view.error_player_cannot_move()
 
     def do_state(self, linke):
-        """Gets the state of the Game"""
+        """Gets the state of the player"""
         state = self.game.get_state()
         self.view.display_state(state)
 
     def do_start(self, line):
-        """Starts a new game or rests old game"""
+        """Starts or resets game"""
         if self.game.get_state() == "Starting":
             print('\nGame already started, enter "place" to select tile rotation')
             return
@@ -57,7 +58,7 @@ class Commands(cmd.Cmd):
             print("warning")
 
     def do_place(self, line):
-        """Places the current map tile"""
+        """Place the tile when player happy with rotation"""
         if self.game.state == "Rotating":
             if self.game.chosen_tile.name == "Foyer":
                 self.game.place_tile(16, 16)
@@ -84,7 +85,8 @@ class Commands(cmd.Cmd):
         
 
     def do_choose(self, direction):
-        """When a zombie door attack is completed. Use this command to select an exit door with a valid direction"""
+        """Availble aftera zombie door attack is completed.
+           Use this command to select an exit door with a valid direction"""
         valid_inputs = ["north", "east", "south", "west"]
         if direction not in valid_inputs:
             return print("Input a valid direction. (Check choose help for more information)")
@@ -119,7 +121,7 @@ class Commands(cmd.Cmd):
         self.move(d.WEST)
 
     def do_save(self, line):
-        """Takes a filepath and saves the game to a file"""
+        """Saves a file to the file path of the game"""
         if not line:
             return print("Must enter a valid file name")
         else:
@@ -130,7 +132,7 @@ class Commands(cmd.Cmd):
                 pickle.dump(self.game, f)
 
     def do_load(self, name):
-        """\nTakes a filepath and loads the game from a file 
+        """\nLoads a file to the file path of the game 
         Useage: load <file name>\n"""
         if not name:
             self.view.warning_enter_valid_file_name()
@@ -145,7 +147,8 @@ class Commands(cmd.Cmd):
             self.view.error_file_does_not_exist(file_name)
 
     def do_fight(self, line):
-        """Player attacks the zombies"""
+        """Used when encounter zombie and will take damage
+        Damage equation is (zombie amount - player attack)"""
         arg1 = ''
         arg2 = 0
         if "," in line:
@@ -174,7 +177,7 @@ class Commands(cmd.Cmd):
             print("You cannot attack right now")
 
     def do_item(self, line):
-        """Player uses item if item equiped"""
+        """Uses a item that the player has equiped"""
         arg1 = ''
         arg2 = 0
         if "," in line:
@@ -192,7 +195,6 @@ class Commands(cmd.Cmd):
         else:
             print("You cannot do that right now")
 
-    # Not finished yet, needs testing for spelling
     def do_drop(self, item):
         """Drops an item from your hand"""
         if self.game.state != "Game Over":
@@ -200,7 +202,7 @@ class Commands(cmd.Cmd):
             self.display_game_info()
     
     def do_swap(self, line):
-        """Swaps an item in you hand with the one in the room"""
+        """Swaps an item that the user holds with new item"""
         if self.game.state == "Swapping Item":
             self.game.drop_item(line)
             self.game.player.add_item(self.game.room_item[0],
@@ -214,12 +216,6 @@ class Commands(cmd.Cmd):
             self.game.trigger_dev_card(self.game.time)
         else:
             print("Cannot currently draw a card")
-
-    # DELETE LATER, DEV COMMANDS FOR TESTING
-    def do_give(self, line):
-        self.game.player.add_item("Oil", 2)
-    def do_give2(self, line):
-        self.game.player.add_item("Candle", 1)
 
     def do_runaway(self, direction):
         """\nUse when attacked and take only 1 damage
@@ -246,14 +242,16 @@ class Commands(cmd.Cmd):
             self.view.error_cannot_runaway()
 
     def do_cower(self, line):
-        """When attacked use this command to cower. You will take no damage but will advance the time"""
+        """When attacked use this command to cower.
+        You will take no damage but will advance the time"""
         if self.game.state == "Moving":
             self.game.trigger_cower()
         else:
             self.view.error_cannot_cower()
 
     def do_search(self, line):
-        """Searches for the zombie totem. (Player must be in the evil temple and will have to resolve a dev card)"""
+        """Searches for the zombie totem.
+        (Player must be in the evil temple and will have to resolve a dev card)"""
         if self.game.state == "Moving":
             self.game.search_for_totem()
         else:
@@ -266,16 +264,12 @@ class Commands(cmd.Cmd):
         else:
             print("Cannot currently bury the totem")
 
-    def do_prompt(self, line):
-        """Change the interactive prompt"""
-        self.prompt = line + '# '
-
     def do_EOF(self, line):
-        """Exits the game without saving"""
+        """Quits the game, will not save progress"""
         return True
 
     def do_player(self, line):
-        """Shows the status of the player"""
+        """Shows player and game information"""
         player = self.game.get_player()
         time = self.game.get_time()
         state = self.game.get_state()

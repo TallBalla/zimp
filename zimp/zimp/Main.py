@@ -1,4 +1,4 @@
-from Commands import Commands
+from commands import Commands
 from Database import Database
      
 if __name__ == "__main__":
@@ -15,3 +15,4 @@ if __name__ == "__main__":
     #print(db.select_data("tiles"))
         
     Commands().cmdloop()
+    
