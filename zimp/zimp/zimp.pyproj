@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c15d9bc5-7889-477c-b6b0-086827a1dd91</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>unittests\gameUnittests.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -31,8 +31,10 @@
     <Compile Include="main.py" />
     <Compile Include="outdoorTile.py" />
     <Compile Include="player.py" />
+    <Compile Include="unittests\playerUnittests.py" />
     <Compile Include="tile.py" />
-    <Compile Include="gameUnittests.py" />
+    <Compile Include="unittests\gameUnittests.py" />
+    <Compile Include="unittests\tileUnittests.py" />
     <Compile Include="view.py" />
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +51,9 @@
   <ItemGroup>
     <Content Include="devcards.json" />
     <Content Include="tiles.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="unittests\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
