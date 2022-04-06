@@ -1,41 +1,48 @@
 from directions import Direction as d
 
+
 class Tile:
-    def __init__(self, name, x=16, y=16, effect=None, doors=None, entrance=None):
+    def __init__(self,
+                 name: str,
+                 x=16,
+                 y=16,
+                 effect=None,
+                 doors=None,
+                 entrance=None):
         if doors is None:
             doors = []
         self.name = name
-        self.x = x  # x will represent the tiles position horizontally
-        self.y = y  # y will represent the tiles position vertically
+        self.x = x
+        self.y = y
         self.effect = effect
         self.doors = doors
         self.entrance = entrance
 
-    def set_x(self, x):
+    def set_x(self, x: int) -> None:
         self.x = x
 
-    def set_y(self, y):
+    def set_y(self, y: int) -> None:
         self.y = y
 
-    def get_x(self):
+    def get_x(self) -> int:
         return self.x
-    
-    def get_y(self):
+
+    def get_y(self) -> int:
         return self.y
-        
-    def get_entrance(self):
+
+    def get_entrance(self) -> str:
         return self.entrance
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def change_door_position(self, idx, direction):
+    def change_door_position(self, idx: int, direction: d) -> None:
         self.doors[idx] = direction
 
-    def set_entrance(self, direction):
+    def set_entrance(self, direction: d) -> None:
         self.entrance = direction
 
-    def rotate_entrance(self):
+    def rotate_entrance(self) -> None:
         if self.entrance == d.NORTH:
             self.set_entrance(d.EAST)
             return
@@ -49,7 +56,7 @@ class Tile:
             self.set_entrance(d.NORTH)
             return
 
-    def rotate_tile(self):  # Will rotate the tile 1 position clockwise
+    def rotate_tile(self) -> None:
         for door in self.doors:
             if door == d.NORTH:
                 self.change_door_position(self.doors.index(door), d.EAST)

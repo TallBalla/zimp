@@ -1,9 +1,9 @@
 import cmd
 import pickle
 import os
-from Game import Game
+from game import Game
 from player import Player
-from View import View
+from view import View
 from directions import Direction as d
 
 

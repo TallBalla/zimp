@@ -1,7 +1,7 @@
 import unittest
-from Game import Game
+from game import Game
 from player import Player
-from Tile import Tile
+from tile import Tile
 from directions import Direction as d
 
 
@@ -14,8 +14,8 @@ class GameTestMethods(unittest.TestCase):
         self.game.start_game_play()
         self.game.place_tile(16, 16)
         self.game.select_move(d.WEST)
-        self.game.move_player(15,16)
-        
+        self.game.move_player(15, 16)
+
     def rotate_foyer(self, amount):
         self.game.start_game_play()
         for i in range(0, amount):
@@ -24,7 +24,7 @@ class GameTestMethods(unittest.TestCase):
         self.game.place_tile(16, 16)
 
     def test_game_state_none(self):
-        # Act 
+        # Act
         actual_state = self.game.get_state()
         expected_state = None
         # Assert
@@ -33,7 +33,7 @@ class GameTestMethods(unittest.TestCase):
     def test_game_state_starting(self):
         # Arrange
         self.game.start_game()
-        # Act 
+        # Act
         actual_state = self.game.get_state()
         expected_state = 'Starting'
         # Assert
@@ -42,7 +42,7 @@ class GameTestMethods(unittest.TestCase):
     def test_game_state_rotating(self):
         # Arrange
         self.game.start_game_play()
-        # Act 
+        # Act
         actual_state = self.game.get_state()
         expected_state = 'Rotating'
         # Assert
@@ -51,8 +51,8 @@ class GameTestMethods(unittest.TestCase):
     def test_game_state_moving(self):
         # Arrange
         self.game.start_game_play()
-        self.game.place_tile(15,15)
-        # Act 
+        self.game.place_tile(15, 15)
+        # Act
         actual_state = self.game.get_state()
         expected_state = 'Moving'
         # Assert
@@ -61,8 +61,8 @@ class GameTestMethods(unittest.TestCase):
     def test_game_state_dev_card(self):
         # Arrange
         self.game.start_game_play()
-        self.game.move_player(16,16)
-        # Act 
+        self.game.move_player(16, 16)
+        # Act
         actual_state = self.game.get_state()
         expected_state = 'Drawing Dev Card'
         # Assert
@@ -71,16 +71,15 @@ class GameTestMethods(unittest.TestCase):
     def test_game_state_drawing_dev_card(self):
         # Arrange
         self.move_player_west()
-        # Act 
+        # Act
         actual_state = self.game.get_state()
         expected_state = 'Drawing Dev Card'
         # Assert
         self.assertEqual(expected_state, actual_state)
 
-
     def test_check_load_inside_tiles(self):
         # Arrange
-        # Act 
+        # Act
         is_outside_tile_none = self.game.check_outdoor_tiles_is_empty()
         # Assert
         self.assertTrue(is_outside_tile_none)
@@ -88,14 +87,14 @@ class GameTestMethods(unittest.TestCase):
     def test_can_load_inside_tiles(self):
         # Arrange
         self.game.load_tiles()
-        # Act 
+        # Act
         is_outside_tile_none = self.game.check_outdoor_tiles_is_empty()
         # Assert
         self.assertFalse(is_outside_tile_none)
-        
+
     def test_check_load_outside_tiles(self):
         # Arrange
-        # Act 
+        # Act
         is_inside_tile_none = self.game.check_indoor_tiles_is_empty()
         # Assert
         self.assertTrue(is_inside_tile_none)
@@ -103,7 +102,7 @@ class GameTestMethods(unittest.TestCase):
     def test_can_load_outside_tiles(self):
         # Arrange
         self.game.load_tiles()
-        # Act 
+        # Act
         is_inside_tile_none = self.game.check_indoor_tiles_is_empty()
         # Assert
         self.assertFalse(is_inside_tile_none)
@@ -111,7 +110,7 @@ class GameTestMethods(unittest.TestCase):
     def test_can_load_dev_cards(self):
         # Arrange
         self.game.load_dev_cards()
-        # Act 
+        # Act
         is_dev_cards_none = self.game.check_dev_cards_is_empty()
         # Assert
         self.assertFalse(is_dev_cards_none)
@@ -120,7 +119,7 @@ class GameTestMethods(unittest.TestCase):
         # Arrange
         self.game.start_game_play()
         self.game.place_tile(16, 16)
-        # Act 
+        # Act
         is_game_map_none = self.game.check_tiles_is_empty()
         # Assert
         self.assertFalse(is_game_map_none)
@@ -130,7 +129,7 @@ class GameTestMethods(unittest.TestCase):
         self.game.start_game_play()
         self.game.place_tile(16, 16)
         current_tile = self.game.get_current_tile()
-        # Act 
+        # Act
         actual_tile_name = current_tile.name
         expected_tile_name = 'Foyer'
         # Assert
@@ -139,35 +138,35 @@ class GameTestMethods(unittest.TestCase):
     def test_south_not_in_chosen_tile_door(self):
         # Arrange
         self.game.start_game_play()
-        # Act 
+        # Act
         is_south_in_tile_door = self.game.check_direct_south_not_in_doors()
         # Assert
         self.assertTrue(is_south_in_tile_door)
-        
+
     def test_north_not_in_chosen_tile_door(self):
         # Arrange
         self.game.start_game_play()
-        # Act 
+        # Act
         is_north_in_tile_door = self.game.check_direct_north_not_in_doors()
         # Assert
         self.assertTrue(is_north_in_tile_door)
-        
+
     def test_east_not_in_chosen_tile_door(self):
         # Arrange
         self.game.start_game_play()
-        # Act 
+        # Act
         is_east_in_tile_door = self.game.check_direct_east_not_in_doors()
         # Assert
         self.assertTrue(is_east_in_tile_door)
-    
+
     def test_west_not_in_chosen_tile_door(self):
         # Arrange
         self.game.start_game_play()
-        # Act 
+        # Act
         is_west_in_tile_door = self.game.check_direct_west_not_in_doors()
         # Assert
         self.assertFalse(is_west_in_tile_door)
-        
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
-    

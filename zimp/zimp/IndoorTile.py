@@ -1,7 +1,14 @@
-from Tile import Tile
+from tile import Tile
+
 
 class IndoorTile(Tile):
-    def __init__(self, name, effect=None, doors=None, x=16, y=16, entrance=None):
+    def __init__(self,
+                 name: str,
+                 effect=None,
+                 doors=None,
+                 x=16,
+                 y=16,
+                 entrance=None):
         if doors is None:
             doors = []
         self.type = "Indoor"

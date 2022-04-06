@@ -32,7 +32,6 @@ class Database():
                            "event_three TEXT",
                            "consquence_three INT",
                            "charges INT"])
-        self.insert_table_data("devcards")
 
     def create_tiles(self):
         self.create_table("tiles",
@@ -43,7 +42,6 @@ class Database():
                            "south INT",
                            "east INT",
                            "west INT"])
-        self.insert_table_data("tiles")
 
     def insert_table_data(self, file_name):
         try:
@@ -52,7 +50,9 @@ class Database():
                 for item in data:
                     self.insert_data(file_name, item)
         except FileNotFoundError:
-            print("File not found")
+            print(f"\nCould not find {file_name}.json"
+                  f"\nPlease make sure it is in the same"
+                  " directory as this script")
             sys.exit()
 
     def drop_table(self, table):
@@ -90,3 +90,5 @@ class Database():
             self.conn.rollback()
         except sqlite3.OperationalError:
             self.conn.rollback()
+        finally:
+            self.conn.commit()

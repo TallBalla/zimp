@@ -1,14 +1,14 @@
 import unittest
-from Game import Game
+from game import Game
 from player import Player
-from Tile import Tile
+from tile import Tile
 from directions import Direction as d
 
 
 class TileTestMethods(unittest.TestCase):
     def setUp(self):
-        self.tile = Tile('Tester', 16, 16, None, None, None)        
-    
+        self.tile = Tile('Tester', 16, 16, None, None, None)
+
     def test_tile_can_get_name(self):
         # Act
         actual_tile_name = self.tile.get_name()
@@ -20,7 +20,7 @@ class TileTestMethods(unittest.TestCase):
         # Act
         actual_x_position = self.tile.get_x()
         expected_x_position = 16
-        # Assert 
+        # Assert
         self.assertEqual(actual_x_position, expected_x_position)
 
     def test_tile_can_set_x_position(self):
@@ -29,7 +29,7 @@ class TileTestMethods(unittest.TestCase):
         # Act
         actual_x_position = self.tile.get_x()
         expected_x_position = 17
-        # Assert 
+        # Assert
         self.assertEqual(actual_x_position, expected_x_position)
 
     def test_tile_can_get_y_position(self):
@@ -38,7 +38,7 @@ class TileTestMethods(unittest.TestCase):
         expected_y_position = 16
         # Assert
         self.assertEqual(actual_y_position, expected_y_position)
-        
+
     def test_tile_can_set_y_position(self):
         # Arrange
         self.tile.set_y(17)
@@ -47,7 +47,7 @@ class TileTestMethods(unittest.TestCase):
         expected_y_position = 17
         # Assert
         self.assertEqual(actual_y_position, expected_y_position)
-        
+
     def test_tile_entrance_is_none(self):
         # Act
         actual_entrance = self.tile.get_entrance()
@@ -63,7 +63,7 @@ class TileTestMethods(unittest.TestCase):
         expected_entrance = d.WEST
         # Assert
         self.assertEqual(actual_entrance, expected_entrance)
-        
+
     def test_tile_entrance_is_north_after_being_rotated(self):
         # Arrange
         self.tile.set_entrance(d.WEST)
@@ -73,6 +73,7 @@ class TileTestMethods(unittest.TestCase):
         expected_entrance = d.NORTH
         # Assert
         self.assertEqual(actual_entrance, expected_entrance)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
