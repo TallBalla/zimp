@@ -4,11 +4,13 @@ import sys
 
 
 class Database():
-    def __init__(self, db_name):
+    def __init__(self, db_name: str):
         self.db_name = db_name
         self.conn = sqlite3.connect(db_name)
 
-    def create_table(self, table_name, list_columns):
+    def create_table(self,
+                     table_name: str,
+                     list_columns: list[str]) -> None:
         cur = self.conn.cursor()
         columns = ", ".join(list_columns)
         sql = "CREATE TABLE {} ({})".format(table_name, columns)
@@ -22,7 +24,7 @@ class Database():
         finally:
             self.conn.commit()
 
-    def create_devcards(self):
+    def create_devcards(self) -> None:
         self.create_table("devcards",
                           ["items TEXT",
                            "event_one TEXT",
@@ -33,7 +35,7 @@ class Database():
                            "consquence_three INT",
                            "charges INT"])
 
-    def create_tiles(self):
+    def create_tiles(self) -> None:
         self.create_table("tiles",
                           ["name TEXT",
                            "effect TEXT",
@@ -43,7 +45,7 @@ class Database():
                            "east INT",
                            "west INT"])
 
-    def insert_table_data(self, file_name):
+    def insert_table_data(self, file_name: str) -> None:
         try:
             with open(f"{file_name}.json") as dc:
                 data = json.load(dc)
@@ -55,13 +57,13 @@ class Database():
                   " directory as this script")
             sys.exit()
 
-    def drop_table(self, table):
+    def drop_table(self, table: str) -> None:
         cur = self.conn.cursor()
         sql = "DROP TABLE IF EXISTS {}".format(table)
         cur.execute(sql)
         self.conn.commit()
 
-    def insert_data(self, table_name, dict_data):
+    def insert_data(self, table_name: str, dict_data: dict) -> None:
         cur = self.conn.cursor()
         columns = ', '.join(dict_data.keys())
         placeholders = tuple(dict_data.values())
@@ -79,7 +81,7 @@ class Database():
         finally:
             self.conn.commit()
 
-    def select_data(self, table_name):
+    def select_data(self, table_name: str) -> None:
         cur = self.conn.cursor()
         sql = "SELECT * FROM {}".format(table_name)
         try:

@@ -14,6 +14,6 @@ class IndoorTile(Tile):
         self.type = "Indoor"
         super().__init__(name, x, y, effect, doors, entrance)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.name}, {self.doors}, {self.type},' \
                f' {self.x}, {self.y}, {self.effect} \n'
