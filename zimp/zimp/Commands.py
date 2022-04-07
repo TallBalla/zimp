@@ -1,3 +1,4 @@
+# Modified by Willem
 import cmd
 import pickle
 import os
@@ -138,9 +139,10 @@ class Commands(cmd.Cmd):
         self.move(d.WEST)
 
     def do_save(self, line: str) -> None:
-        """Saves a file to the file path of the game"""
+        """\nSaves a file to the file path of the game
+        Useage: save <file name>\n"""
         if not line:
-            self.view.error("Must enter a valid file name")
+            self.view.warning("Must enter a valid file name")
         else:
             if len(self.game.tiles) == 0:
                 self.view.error("Cannot save game with empty tiles")

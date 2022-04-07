@@ -43,7 +43,7 @@ class Game():
         self.room_item = None
         self.db = Database("zimp")
 
-    # start Willem checks
+    # Start Willems Implementation
     def check_tile_name_foyer(self, tile: Tile) -> bool:
         return tile.name == 'Foyer'
 
@@ -174,9 +174,6 @@ class Game():
         '''
         return len(self.outdoor_tiles) == 0
 
-    # end Willem checks
-
-    # start willem implemented
     def get_state(self) -> str:
         return self.state
 
@@ -186,64 +183,9 @@ class Game():
     def start_game(self) -> None:
         self.state = 'Starting'
 
-    # end willem implmented
-
-    def start_game_play(self) -> None:
-        self.load_tiles()
-        self.load_dev_cards()
-        for tile in self.indoor_tiles:
-            if self.check_tile_name_foyer(tile):
-                self.chosen_tile = tile
-                self.state = "Rotating"
-                break
-
-    def get_suggested_command(self) -> str:
-        if self.check_state_is_moving():
-            return self.get_availiable_doors().lower()
-        if self.check_state_is_rotating():
-            return "rotate place"
-        if self.check_state_is_choosing_door():
-            return self.get_availiable_doors().lower()
-        if self.check_state_is_drawing_dev_card():
-            return "draw"
-        if self.check_state_is_choosing_door():
-            return "choose <direction>"
-
-    def get_availiable_doors(self) -> str:
-        return ' '.join(str(i.name) for i in self.chosen_tile.doors)
-
-    def get_player(self) -> Player:
-        return self.player
-
-    def get_time(self) -> int:
-        return self.time
-
-    # start willem implemented
     def set_time(self, time: int) -> None:
         self.time = time
 
-    # end willem implemented
-
-    def get_chosen_tile(self) -> None:
-        return self.chosen_tile
-
-    def load_tiles(self) -> None:
-        self.db.create_tiles()
-        self.db.insert_table_data("tiles")
-        for tile in self.db.select_data('tiles'):
-            doors = self.resolve_doors(tile[3], tile[4], tile[5], tile[6])
-            if self.check_tile_outdoors_index(2, tile):
-                new_tile = OutdoorTile(tile[0], tile[1], doors)
-                if self.check_tile_patio(0, tile):
-                    new_tile.set_entrance(d.NORTH)
-                self.outdoor_tiles.append(new_tile)
-            if self.check_tile_indoors_index(2, tile):
-                new_tile = IndoorTile(tile[0], tile[1], doors)
-                if self.check_tile_dining_room(0, tile):
-                    new_tile.set_entrance(d.NORTH)
-                self.indoor_tiles.append(new_tile)
-
-    # start willem checks
     def check_tile_outdoors_index(self, index: int, tile: Tile) -> bool:
         return tile[index] == 'Outdoor'
 
@@ -268,95 +210,13 @@ class Game():
     def check_player_can_move_outside(self) -> bool:
         return self.check_current_tile_name_dining_room() \
             and self.check_player_facing_exit()
-    # end willem checks
 
-    def draw_tile(self, x: int, y: int) -> None:
-        if self.check_current_tile_type_indoors():  # get a new tile
-            if len(self.indoor_tiles) == 0:
-                print("No more indoor tiles")
-            if self.check_player_can_move_outside():
-                t = [t for t in self.outdoor_tiles if t.name == "Patio"]
-                tile = t[0]
-                tile.set_x(x)
-                tile.set_y(y)
-                self.chosen_tile = tile
-            else:
-                tile = random.choice(self.indoor_tiles)
-                tile.set_x(x)
-                tile.set_y(y)
-                self.chosen_tile = tile
-            return
-        if len(self.outdoor_tiles) == 0:
-            print("No more outdoor tiles")
-        tile = random.choice(self.outdoor_tiles)
-        tile.set_x(x)
-        tile.set_y(y)
-        self.chosen_tile = tile
-
-    def load_dev_cards(self) -> None:
-        self.db.create_devcards()
-        self.db.insert_table_data("devcards")
-        for card in self.db.select_data("devcards"):
-            item = card[0]
-            event_one = (card[1], card[2])
-            event_two = (card[3], card[4])
-            event_three = (card[5], card[6])
-            charges = card[7]
-            dev_card = DevCard(item,
-                               charges,
-                               event_one,
-                               event_two,
-                               event_three)
-            self.dev_cards.append(dev_card)
-        random.shuffle(self.dev_cards)
-        self.dev_cards.pop(0)
-        self.dev_cards.pop(0)
-
-    # start willem checks
     def check_state_is_running(self) -> bool:
         return self.state == "Running"
 
     def check_cant_move_to_room(self, x: int, y: int) -> bool:
         return self.check_for_room(x, y) is False
 
-    # end willem checks
-
-    def move_player(self, x: int, y: int) -> None:
-        self.player.set_y(y)
-        self.player.set_x(x)
-        if self.check_state_is_running():
-            self.state = "Moving"
-        else:
-            self.state = "Drawing Dev Card"
-
-    def get_tile_at(self, x: int, y: int) -> Tile:
-        return self.tiles[(x, y)]
-
-    def select_move(self, direction: d) -> None:
-        x, y = self.get_destination_coords(direction)
-        if self.check_for_door(direction):
-            self.current_move_direction = direction
-            if self.check_cant_move_to_room(x, y):
-                if self.check_state_is_running():
-                    print("Can only run into a discovered room")
-                else:
-                    self.draw_tile(x, y)
-                    self.state = "Rotating"
-            if self.check_for_room(x, y):
-                if self.check_indoor_outdoor_move(self.get_current_tile().type,
-                                                  self.get_tile_at(x, y).type):
-                    print("Cannot Move this way")
-                else:
-                    self.move_player(x, y)
-
-    def check_indoor_outdoor_move(self,
-                                  current_type: str,
-                                  move_type: str) -> bool:
-        if current_type != move_type \
-           and self.get_current_tile().name != "Patio" or "Dining Room":
-            return False
-
-    # start willem checks
     def check_direct_north(self, direction: d) -> bool:
         '''
         Checks the direction is north
@@ -422,42 +282,7 @@ class Game():
 
     def check_direct_west_not_in_doors(self) -> bool:
         return d.WEST not in self.chosen_tile.doors
-    # end willem checks
 
-    def get_destination_coords(self, direction: d) -> list[int, int]:
-        if self.check_direct_north(direction):
-            return self.player.get_x(), self.player.get_y() - 1
-        if self.check_direct_south(direction):
-            return self.player.get_x(), self.player.get_y() + 1
-        if self.check_direct_east(direction):
-            return self.player.get_x() + 1, self.player.get_y()
-        if self.check_direct_west(direction):
-            return self.player.get_x() - 1, self.player.get_y()
-
-    def check_for_room(self, x: int, y: int) -> bool:
-        if self.check_coordinates_in_tiles(x, y):
-            return False
-        self.chosen_tile = self.tiles[(x, y)]
-        return True
-
-    def check_doors_align(self, direction: d) -> bool:
-        if self.check_tile_name_foyer(self.get_current_tile()):
-            return True
-        if self.check_direct_north(direction):
-            if self.check_direct_south_not_in_doors():
-                return False
-        if self.check_direct_south(direction):
-            if self.check_direct_north_not_in_doors():
-                return False
-        if self.check_direct_west(direction):
-            if self.check_direct_east_not_in_doors():
-                return False
-        elif self.check_direct_east(direction):
-            if self.check_direct_west_not_in_doors():
-                return False
-        return True
-
-    # start willem checks
     def check_current_tile_entrance_north(self) -> bool:
         return self.get_current_tile().entrance == d.NORTH
 
@@ -502,67 +327,11 @@ class Game():
         return self.current_move_direction == d.WEST \
                and tile.entrance == d.EAST
 
-    # end willem checks
-
-    def check_entrances_align(self) -> bool:
-        if self.check_current_tile_entrance_north():
-            if self.check_choosen_tile_entrance_south():
-                return True
-        if self.check_current_tile_entrance_south():
-            if self.check_choosen_tile_entrance_north():
-                return True
-        if self.check_current_tile_entrance_west():
-            if self.check_choosen_tile_entrance_east():
-                return True
-        if self.check_current_tile_entrance_east():
-            if self.check_choosen_tile_entrance_west():
-                return True
-        return False
-
-    def check_dining_room_has_exit(self) -> bool:
-        tile = self.chosen_tile
-        if tile.name == "Dining Room":
-            if self.check_current_direct_north_and_entrance_south(tile):
-                return False
-            if self.check_current_direct_south_and_entrance_north(tile):
-                return False
-            if self.check_current_direct_east_and_entrance_west(tile):
-                return False
-            if self.check_current_direct_west_and_entrance_east(tile):
-                return False
-        return True
-
-    # start willem checks
     def check_tile_outdoors(self, tile: Tile) -> bool:
         return tile.type == "Outdoor"
 
     def check_current_tile_has_exits(self) -> bool:
         return self.get_current_tile().name == "Dining Room" or "Patio"
-
-    # end willem checks
-
-    def place_tile(self, x: int, y: int) -> None:
-        tile = self.chosen_tile
-        self.tiles[(x, y)] = tile
-
-        self.state = "Moving"
-        if self.check_tile_outdoors(tile):
-            self.outdoor_tiles.pop(self.outdoor_tiles.index(tile))
-            return
-        self.indoor_tiles.pop(self.indoor_tiles.index(tile))
-
-    def get_current_tile(self) -> Tile:
-        return self.tiles[self.player.get_x(), self.player.get_y()]
-
-    def rotate(self) -> None:
-        tile = self.chosen_tile
-        tile.rotate_tile()
-        if self.check_tile_name_foyer(tile):
-            return
-        if self.check_current_tile_has_exits():
-            tile.rotate_entrance()
-
-    # start willem check
 
     def check_list_len(self, list: list[any], length: int) -> bool:
         '''
@@ -603,7 +372,217 @@ class Game():
     def check_event_consequence_equal_to_one(self,
                                              event: list[any]) -> bool:
         return event[1] == 1
-    # end willem check
+
+    def get_suggested_command(self) -> str:
+        if self.check_state_is_moving():
+            return self.get_availiable_doors().lower()
+        if self.check_state_is_rotating():
+            return "rotate place"
+        if self.check_state_is_choosing_door():
+            return self.get_availiable_doors().lower()
+        if self.check_state_is_drawing_dev_card():
+            return "draw"
+        if self.check_state_is_choosing_door():
+            return "choose <direction>"
+    # End Willems Implementation
+
+    def start_game_play(self) -> None:
+        self.load_tiles()
+        self.load_dev_cards()
+        for tile in self.indoor_tiles:
+            if self.check_tile_name_foyer(tile):
+                self.chosen_tile = tile
+                self.state = "Rotating"
+                break
+
+    def get_availiable_doors(self) -> str:
+        return ' '.join(str(i.name) for i in self.chosen_tile.doors)
+
+    def get_player(self) -> Player:
+        return self.player
+
+    def get_time(self) -> int:
+        return self.time
+
+    def get_chosen_tile(self) -> None:
+        return self.chosen_tile
+
+    # edited by Willem
+    def load_tiles(self) -> None:
+        self.db.create_tiles()
+        self.db.insert_table_data("tiles")
+        for tile in self.db.select_data('tiles'):
+            doors = self.resolve_doors(tile[3], tile[4], tile[5], tile[6])
+            if self.check_tile_outdoors_index(2, tile):
+                new_tile = OutdoorTile(tile[0], tile[1], doors)
+                if self.check_tile_patio(0, tile):
+                    new_tile.set_entrance(d.NORTH)
+                self.outdoor_tiles.append(new_tile)
+            if self.check_tile_indoors_index(2, tile):
+                new_tile = IndoorTile(tile[0], tile[1], doors)
+                if self.check_tile_dining_room(0, tile):
+                    new_tile.set_entrance(d.NORTH)
+                self.indoor_tiles.append(new_tile)
+
+    def draw_tile(self, x: int, y: int) -> None:
+        if self.check_current_tile_type_indoors():  # get a new tile
+            if len(self.indoor_tiles) == 0:
+                print("No more indoor tiles")
+            if self.check_player_can_move_outside():
+                t = [t for t in self.outdoor_tiles if t.name == "Patio"]
+                tile = t[0]
+                tile.set_x(x)
+                tile.set_y(y)
+                self.chosen_tile = tile
+            else:
+                tile = random.choice(self.indoor_tiles)
+                tile.set_x(x)
+                tile.set_y(y)
+                self.chosen_tile = tile
+            return
+        if len(self.outdoor_tiles) == 0:
+            print("No more outdoor tiles")
+        tile = random.choice(self.outdoor_tiles)
+        tile.set_x(x)
+        tile.set_y(y)
+        self.chosen_tile = tile
+
+    # Edited by Willem
+    def load_dev_cards(self) -> None:
+        self.db.create_devcards()
+        self.db.insert_table_data("devcards")
+        for card in self.db.select_data("devcards"):
+            item = card[0]
+            event_one = (card[1], card[2])
+            event_two = (card[3], card[4])
+            event_three = (card[5], card[6])
+            charges = card[7]
+            dev_card = DevCard(item,
+                               charges,
+                               event_one,
+                               event_two,
+                               event_three)
+            self.dev_cards.append(dev_card)
+        random.shuffle(self.dev_cards)
+        self.dev_cards.pop(0)
+        self.dev_cards.pop(0)
+
+    def move_player(self, x: int, y: int) -> None:
+        self.player.set_y(y)
+        self.player.set_x(x)
+        if self.check_state_is_running():
+            self.state = "Moving"
+        else:
+            self.state = "Drawing Dev Card"
+
+    def get_tile_at(self, x: int, y: int) -> Tile:
+        return self.tiles[(x, y)]
+
+    def select_move(self, direction: d) -> None:
+        x, y = self.get_destination_coords(direction)
+        if self.check_for_door(direction):
+            self.current_move_direction = direction
+            if self.check_cant_move_to_room(x, y):
+                if self.check_state_is_running():
+                    print("Can only run into a discovered room")
+                else:
+                    self.draw_tile(x, y)
+                    self.state = "Rotating"
+            if self.check_for_room(x, y):
+                if self.check_indoor_outdoor_move(self.get_current_tile().type,
+                                                  self.get_tile_at(x, y).type):
+                    print("Cannot Move this way")
+                else:
+                    self.move_player(x, y)
+
+    def check_indoor_outdoor_move(self,
+                                  current_type: str,
+                                  move_type: str) -> bool:
+        if current_type != move_type \
+           and self.get_current_tile().name != "Patio" or "Dining Room":
+            return False
+
+    def get_destination_coords(self, direction: d) -> list[int, int]:
+        if self.check_direct_north(direction):
+            return self.player.get_x(), self.player.get_y() - 1
+        if self.check_direct_south(direction):
+            return self.player.get_x(), self.player.get_y() + 1
+        if self.check_direct_east(direction):
+            return self.player.get_x() + 1, self.player.get_y()
+        if self.check_direct_west(direction):
+            return self.player.get_x() - 1, self.player.get_y()
+
+    def check_for_room(self, x: int, y: int) -> bool:
+        if self.check_coordinates_in_tiles(x, y):
+            return False
+        self.chosen_tile = self.tiles[(x, y)]
+        return True
+
+    def check_doors_align(self, direction: d) -> bool:
+        if self.check_tile_name_foyer(self.get_current_tile()):
+            return True
+        if self.check_direct_north(direction):
+            if self.check_direct_south_not_in_doors():
+                return False
+        if self.check_direct_south(direction):
+            if self.check_direct_north_not_in_doors():
+                return False
+        if self.check_direct_west(direction):
+            if self.check_direct_east_not_in_doors():
+                return False
+        elif self.check_direct_east(direction):
+            if self.check_direct_west_not_in_doors():
+                return False
+        return True
+
+    def check_entrances_align(self) -> bool:
+        if self.check_current_tile_entrance_north():
+            if self.check_choosen_tile_entrance_south():
+                return True
+        if self.check_current_tile_entrance_south():
+            if self.check_choosen_tile_entrance_north():
+                return True
+        if self.check_current_tile_entrance_west():
+            if self.check_choosen_tile_entrance_east():
+                return True
+        if self.check_current_tile_entrance_east():
+            if self.check_choosen_tile_entrance_west():
+                return True
+        return False
+
+    def check_dining_room_has_exit(self) -> bool:
+        tile = self.chosen_tile
+        if tile.name == "Dining Room":
+            if self.check_current_direct_north_and_entrance_south(tile):
+                return False
+            if self.check_current_direct_south_and_entrance_north(tile):
+                return False
+            if self.check_current_direct_east_and_entrance_west(tile):
+                return False
+            if self.check_current_direct_west_and_entrance_east(tile):
+                return False
+        return True
+
+    def place_tile(self, x: int, y: int) -> None:
+        tile = self.chosen_tile
+        self.tiles[(x, y)] = tile
+
+        self.state = "Moving"
+        if self.check_tile_outdoors(tile):
+            self.outdoor_tiles.pop(self.outdoor_tiles.index(tile))
+            return
+        self.indoor_tiles.pop(self.indoor_tiles.index(tile))
+
+    def get_current_tile(self) -> Tile:
+        return self.tiles[self.player.get_x(), self.player.get_y()]
+
+    def rotate(self) -> None:
+        tile = self.chosen_tile
+        tile.rotate_tile()
+        if self.check_tile_name_foyer(tile):
+            return
+        if self.check_current_tile_has_exits():
+            tile.rotate_entrance()
 
     def trigger_dev_card(self, time: int) -> None:
         if self.check_list_len(self.dev_cards, 0):
@@ -744,7 +723,6 @@ class Game():
                 print("\nYou cannot use this item right now, try again\n")
                 return
 
-        # Calculate damage on the player
         damage = zombies - player_attack
         if damage < 0:
             damage = 0

@@ -1,3 +1,4 @@
+# Willems Implementation
 from directions import Direction as d
 
 
@@ -30,7 +31,7 @@ class Tile:
     def get_y(self) -> int:
         return self.y
 
-    def get_entrance(self) -> str:
+    def get_entrance(self) -> d:
         return self.entrance
 
     def get_name(self) -> str:

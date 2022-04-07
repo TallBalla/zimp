@@ -37,7 +37,7 @@ class Player:
     def remove_attack(self, attack: int) -> None:
         self.attack -= attack
 
-    def get_items(self) -> list:
+    def get_items(self) -> list[str]:
         return self.items
 
     def get_item_charges(self, item_name: str) -> int:
@@ -55,9 +55,9 @@ class Player:
             if check_item[0] == item_name:
                 check_item[1] -= 1
 
-    def add_item(self, item: list, charges: int) -> None:
+    def add_item(self, item_name: str, charges: int) -> None:
         if len(self.items) < 2:
-            self.items.append([item, charges])
+            self.items.append([item_name, charges])
 
     def remove_item(self, item: list) -> None:
         self.items.pop(self.items.index(item))

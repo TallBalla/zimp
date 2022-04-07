@@ -1,3 +1,4 @@
+# Willems Implementation
 import json
 import sqlite3
 import sys
@@ -81,7 +82,7 @@ class Database():
         finally:
             self.conn.commit()
 
-    def select_data(self, table_name: str) -> None:
+    def select_data(self, table_name: str) -> any:
         cur = self.conn.cursor()
         sql = "SELECT * FROM {}".format(table_name)
         try:
@@ -94,3 +95,4 @@ class Database():
             self.conn.rollback()
         finally:
             self.conn.commit()
+            
