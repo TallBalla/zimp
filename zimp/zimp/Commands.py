@@ -56,7 +56,6 @@ class Commands(cmd.Cmd):
         else:
             self.view.error("Cannot rotate the tile")
 
-    # start willems checks
     def check_current_tile_dinning_room(self) -> bool:
         return self.game.get_current_tile().name == "Dining Room"
 
@@ -70,7 +69,6 @@ class Commands(cmd.Cmd):
 
     def check_doors_align(self) -> bool:
         return self.game.check_doors_align(self.game.current_move_direction)
-    # end willems checks
 
     def do_place(self, line: str) -> bool:
         """Place the tile when player happy with rotation"""
