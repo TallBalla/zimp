@@ -1,9 +1,10 @@
 # Willems Implementation
 import unittest
-from game import Game
-from player import Player
-from tile import Tile
+from Game import Game
+from Player import Player
+from Tile import Tile
 from directions import Direction as d
+
 
 class GameTestMethods(unittest.TestCase):
     def setUp(self):

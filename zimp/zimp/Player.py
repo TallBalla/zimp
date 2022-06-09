@@ -1,4 +1,3 @@
-from tkinter import N
 
 
 class Player:

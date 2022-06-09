@@ -1,11 +1,11 @@
 import random
 import doctest
-from tile import Tile
-from outdoorTile import OutdoorTile
-from indoorTile import IndoorTile
-from devCard import DevCard
-from player import Player
-from database import Database
+from Tile import Tile
+from OutdoorTile import OutdoorTile
+from IndoorTile import IndoorTile
+from DevCard import DevCard
+from Player import Player
+from Database import Database
 from directions import Direction as d
 
 
