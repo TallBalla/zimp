@@ -1,4 +1,4 @@
-from tile import Tile
+from Tile import Tile
 
 
 class IndoorTile(Tile):

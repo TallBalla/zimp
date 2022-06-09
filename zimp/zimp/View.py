@@ -1,8 +1,8 @@
 # Willems Implementation
 from pyfiglet import Figlet
 from termcolor import colored
-from tile import Tile
-from player import Player
+from Tile import Tile
+from Player import Player
 
 
 class View():
