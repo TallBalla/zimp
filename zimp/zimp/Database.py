@@ -95,4 +95,3 @@ class Database():
             self.conn.rollback()
         finally:
             self.conn.commit()
-            

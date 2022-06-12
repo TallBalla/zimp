@@ -181,19 +181,22 @@ class Commands(cmd.Cmd):
                 self.game.trigger_attack(arg1)
             elif arg1 != '' and arg2 != 0:
                 self.game.trigger_attack(arg1, arg2)
+            self.handle_next_move()
 
-            if len(self.game.chosen_tile.doors) == 1\
-               and self.game.chosen_tile.name != "Foyer":
-                self.game.state = "Choosing Door"
-                self.display_game_info()
-            if self.game.state == "Game Over":
-                self.view.error("You lose, game over, you have"
-                                "succumbed to the zombie horde")
-                self.view.message('To play again, type "start"')
-            else:
-                self.display_game_info()
         else:
             self.view.warning("You cannot attack right now")
+
+    def handle_next_move(self):
+        if len(self.game.chosen_tile.doors) == 1\
+               and self.game.chosen_tile.name != "Foyer":
+            self.game.state = "Choosing Door"
+            self.display_game_info()
+        if self.game.state == "Game Over":
+            self.view.error("You lose, game over, you have"
+                                "succumbed to the zombie horde")
+            self.view.message('To play again, type "start"')
+        else:
+            self.display_game_info()
 
     def do_item(self, line: str) -> None:
         """Uses a item that the player has equiped"""
