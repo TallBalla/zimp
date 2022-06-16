@@ -385,19 +385,19 @@ class Game():
         return self.time >= 11
 
     def check_event_type(self, event: list[any], type: str) -> bool:
-        return event[0] == type
+        return event.type == type
 
     def check_event_consequence_less_than_one(self,
                                               event: list[any]) -> bool:
-        return event[1] < 1
+        return event.get_consquence() < 1
 
     def check_event_consequence_greater_than_one(self,
                                                  event: list[any]) -> bool:
-        return event[1] > 1
+        return event.get_consquence() > 1
 
     def check_event_consequence_equal_to_one(self,
                                              event: list[any]) -> bool:
-        return event[1] == 1
+        return event.get_consquence() == 1
 
     def get_suggested_command(self) -> str:
         if self.check_state_is_moving():
@@ -479,15 +479,12 @@ class Game():
         self.db.insert_table_data("devcards")
         for card in self.db.select_data("devcards"):
             item = card[0]
-            event_one = (card[1], card[2])
-            event_two = (card[3], card[4])
-            event_three = (card[5], card[6])
             charges = card[7]
             dev_card = DevCard(item,
-                               charges,
-                               event_one,
-                               event_two,
-                               event_three)
+                               charges)
+            dev_card.add_event(card[1], card[2])
+            dev_card.add_event(card[3], card[4])
+            dev_card.add_event(card[5], card[6])
             self.dev_cards.append(dev_card)
         random.shuffle(self.dev_cards)
         self.dev_cards.pop(0)
@@ -629,6 +626,7 @@ class Game():
             if len(self.chosen_tile.doors) == 1 \
                and self.chosen_tile.name != "Foyer":
                 self.set_state("Choosing Door")
+                self.set_state("Choosing Door")
                 self.get_suggested_command()
                 return
             else:
@@ -637,13 +635,13 @@ class Game():
             return
         elif self.check_event_type(event, "Health"):  # Change health of player
             print("\nThere might be something in this room")
-            self.player.add_health(event[1])
+            self.player.add_health(event.get_consquence())
 
             if self.check_event_consequence_greater_than_one(event):
-                print(f"You gained {event[1]} health\n")
+                print(f"You gained {event.get_consquence()} health\n")
                 self.set_state("Moving")
             elif self.check_event_consequence_less_than_one(event):
-                print(f"You lost {event[1]} health\n")
+                print(f"You lost {event.get_consquence()} health\n")
                 self.set_state("Moving")
                 if self.player.get_health() <= 0:
                     self.lose_game()
@@ -693,9 +691,9 @@ class Game():
             if self.get_current_tile().name == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
         elif self.check_event_type(event, "Zombies"):
-            print(f"\nThere are {event[1]} zombies in this room, prepare to"
-                  " fight!\n")
-            self.current_zombies = int(event[1])
+            print(f"\nThere are {event.get_consquence()} zombies in this room,"
+                  "prepare to fight!\n")
+            self.current_zombies = int(event.get_consquence())
             self.set_state("Attacking")
 
     def trigger_attack(self, *item: any) -> None:

@@ -1,3 +1,4 @@
+from cgi import test
 import unittest
 from parameterized import parameterized
 
@@ -20,9 +21,15 @@ class TriggerDevCardBranchTests(unittest.TestCase):
 
     def set_up_game_with_dev_cards(self,
                                    event_one,
-                                   event_three=[]):
+                                   event_three=('Item', 0)):
         test_dev_cards = []
-        test_dev_cards.append(DevCard('test', 1, event_one, None, event_three))
+        test_dev_card = DevCard('test', 1)
+        test_dev_card.add_event(event_one[0], event_one[1])
+        test_dev_card.add_event('test', 1)
+        test_dev_card.add_event(event_three[0], event_three[1])
+
+        test_dev_cards.append(test_dev_card)
+
         self.game.set_dev_cards(test_dev_cards)
 
     def set_up_player(self, attack=0, health=6):
@@ -126,7 +133,7 @@ class TriggerDevCardBranchTests(unittest.TestCase):
             self.assertEqual(self.game.get_state(), expected_state)
 
     @parameterized.expand([
-        ('Foyer', [], 11, [], 'Game Over', 11, ('Item', 1), ('Item', 0)),
+        ('Foyer', [], 11, [], 'Game Over', 11, ('Item', 1)),
         ('Foyer', [], 9, [], 'Moving', 10, ('Item', 1)),
         ('Not Foyer', [d.NORTH], 9, [], 'Choosing Door', 10, ('Item', 1)),
     ])
@@ -138,7 +145,7 @@ class TriggerDevCardBranchTests(unittest.TestCase):
                                               expected_state: str,
                                               expected_time: int,
                                               event_one: list,
-                                              event_three=[]):
+                                              event_three=('Item', 0)):
 
         self.set_up_game_with_dev_cards(event_one, event_three)
         self.set_up_player()

@@ -1,26 +1,26 @@
+from flyweight_pattern.event import Event
+
+
 class DevCard:
     def __init__(self,
                  item: str,
-                 charges: int,
-                 event_one: str,
-                 event_two: str,
-                 event_three: str):
+                 charges: int):
         self.item = item
         self.charges = charges
-        self.event_one = event_one
-        self.event_two = event_two
-        self.event_three = event_three
+        self.events = []
 
         if self.charges != "Unlimited":
             int(self.charges)
 
     def get_event_at_time(self, time: int) -> str:
-        if time == 9:
-            return self.event_one
-        elif time == 10:
-            return self.event_two
-        elif time == 11:
-            return self.event_three
+        event_index = time - 9
+        if event_index < len(self.events):
+            event_index = 0
+        return self.events[event_index]
+
+    def add_event(self, type: str, consquence: int) -> None:
+        event = Event(type, consquence)
+        self.events.append(event)
 
     def get_item(self) -> str:
         return self.item
