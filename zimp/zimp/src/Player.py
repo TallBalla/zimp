@@ -75,3 +75,9 @@ class Player:
 
     def get_has_totem(self) -> bool:
         return self.has_totem
+
+    def set_attack(self, attack: int) -> None:
+        self.attack = attack
+
+    def set_items(self, items: list[str]) -> None:
+        self.items = items

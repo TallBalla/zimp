@@ -8,6 +8,10 @@ from Player import Player
 from Database import Database
 from directions import Direction as d
 
+from strategy_pattern.oneItemAttackStrategy import OneItemAttackStrategy
+from strategy_pattern.twoItemAttackStrategy import TwoItemAttackStrategy
+from strategy_pattern.attackContext import AttackContext
+
 
 class Game():
     def __init__(self,
@@ -42,6 +46,7 @@ class Game():
         self.can_cower = can_cower
         self.room_item = None
         self.db = Database("zimp")
+        self.player_attack = 0
 
     # Start Willems Implementation
     def check_tile_name_foyer(self, tile: Tile) -> bool:
@@ -180,11 +185,32 @@ class Game():
     def set_state(self, state: str) -> None:
         self.state = state
 
+    def get_dev_cards(self) -> list:
+        return self.dev_cards
+
+    def set_dev_cards(self, dev_cards: list) -> None:
+        self.dev_cards = dev_cards
+
     def start_game(self) -> None:
-        self.state = 'Starting'
+        self.set_state('Starting')
 
     def set_time(self, time: int) -> None:
         self.time = time
+
+    def set_chosen_tile_name(self, name: str) -> None:
+        self.chosen_tile.name = name
+
+    def get_chosen_tile_name(self) -> str:
+        return self.chosen_tile.name
+
+    def set_chosen_tile_doors(self, door: list) -> None:
+        self.chosen_tile.doors = door
+
+    def get_chosen_tile_door(self) -> list:
+        return self.chosen_tile.doors
+
+    def get_current_zombies(self) -> int:
+        return self.current_zombies
 
     def check_tile_outdoors_index(self, index: int, tile: Tile) -> bool:
         return tile[index] == 'Outdoor'
@@ -356,7 +382,7 @@ class Game():
         >>> g.check_time_is_up()
         True
         '''
-        return self.get_time() == 11
+        return self.time >= 11
 
     def check_event_type(self, event: list[any], type: str) -> bool:
         return event[0] == type
@@ -392,7 +418,7 @@ class Game():
         for tile in self.indoor_tiles:
             if self.check_tile_name_foyer(tile):
                 self.chosen_tile = tile
-                self.state = "Rotating"
+                self.set_state("Rotating")
                 break
 
     def get_availiable_doors(self) -> str:
@@ -471,9 +497,9 @@ class Game():
         self.player.set_y(y)
         self.player.set_x(x)
         if self.check_state_is_running():
-            self.state = "Moving"
+            self.set_state("Moving")
         else:
-            self.state = "Drawing Dev Card"
+            self.set_state("Drawing Dev Card")
 
     def get_tile_at(self, x: int, y: int) -> Tile:
         return self.tiles[(x, y)]
@@ -487,7 +513,7 @@ class Game():
                     print("Can only run into a discovered room")
                 else:
                     self.draw_tile(x, y)
-                    self.state = "Rotating"
+                    self.set_state("Rotating")
             if self.check_for_room(x, y):
                 if self.check_indoor_outdoor_move(self.get_current_tile().type,
                                                   self.get_tile_at(x, y).type):
@@ -504,13 +530,13 @@ class Game():
 
     def get_destination_coords(self, direction: d) -> list[int, int]:
         if self.check_direct_north(direction):
-            return self.player.get_x(), self.player.get_y() - 1
+            return [self.player.get_x(), self.player.get_y() - 1]
         if self.check_direct_south(direction):
-            return self.player.get_x(), self.player.get_y() + 1
+            return [self.player.get_x(), self.player.get_y() + 1]
         if self.check_direct_east(direction):
-            return self.player.get_x() + 1, self.player.get_y()
+            return [self.player.get_x() + 1, self.player.get_y()]
         if self.check_direct_west(direction):
-            return self.player.get_x() - 1, self.player.get_y()
+            return [self.player.get_x() - 1, self.player.get_y()]
 
     def check_for_room(self, x: int, y: int) -> bool:
         if self.check_coordinates_in_tiles(x, y):
@@ -567,7 +593,7 @@ class Game():
         tile = self.chosen_tile
         self.tiles[(x, y)] = tile
 
-        self.state = "Moving"
+        self.set_state("Moving")
         if self.check_tile_outdoors(tile):
             self.outdoor_tiles.pop(self.outdoor_tiles.index(tile))
             return
@@ -602,11 +628,11 @@ class Game():
             print("\nThere is nothing in this room\n")
             if len(self.chosen_tile.doors) == 1 \
                and self.chosen_tile.name != "Foyer":
-                self.state = "Choosing Door"
+                self.set_state("Choosing Door")
                 self.get_suggested_command()
                 return
             else:
-                self.state = "Moving"
+                self.set_state("Moving")
                 self.get_suggested_command()
             return
         elif self.check_event_type(event, "Health"):  # Change health of player
@@ -615,25 +641,24 @@ class Game():
 
             if self.check_event_consequence_greater_than_one(event):
                 print(f"You gained {event[1]} health\n")
-                self.state = "Moving"
+                self.set_state("Moving")
             elif self.check_event_consequence_less_than_one(event):
                 print(f"You lost {event[1]} health\n")
-                self.state = "Moving"
+                self.set_state("Moving")
                 if self.player.get_health() <= 0:
                     self.lose_game()
                     return
-            elif self.check_event_consequence_equal_to_one(event):
+            else:
                 print("You didn't gain or lose any health\n")
+                self.set_state("Moving")
             if len(self.chosen_tile.doors) == 1 \
                and self.chosen_tile.name != "Foyer":
-                self.state = "Choosing Door"
+                self.set_state("Choosing Door")
             if self.get_current_tile().name == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
-            else:
-                self.state = "Moving"
-                self.get_suggested_command()
+
         elif self.check_event_type(event, "Item"):
-            if len(self.dev_cards) == 0:
+            if self.check_list_len(self.dev_cards, 0):
                 if self.get_time() == 11:
                     print("\nYou have run out of time")
                     self.lose_game()
@@ -650,80 +675,47 @@ class Game():
                 print(f"You picked up the {next_card.get_item()}\n")
                 if len(self.chosen_tile.doors) == 1 \
                    and self.chosen_tile.name != "Foyer":
-                    self.state = "Choosing Door"
+                    self.set_state("Choosing Door")
                     self.get_suggested_command()
                 else:
-                    self.state = "Moving"
+                    self.set_state("Moving")
                     self.get_suggested_command()
             else:
                 self.room_item = [next_card.get_item(), next_card.charges]
                 response = input("\nYou already have two items, do you want"
                                  " to drop one of them? (Y/N) ")
                 if response == "Y" or response == "y":
-                    self.state = "Swapping Item"
+                    self.set_state("Swapping Item")
                 else:
-                    self.state = "Moving"
+                    self.set_state("Moving")
                     self.room_item = None
                     self.get_suggested_command()
             if self.get_current_tile().name == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
-        elif event[0] == "Zombies":  # Add zombies to the game, begin combat
+        elif self.check_event_type(event, "Zombies"):
             print(f"\nThere are {event[1]} zombies in this room, prepare to"
                   " fight!\n")
             self.current_zombies = int(event[1])
-            self.state = "Attacking"  # Create CMD for attacking zombies
+            self.set_state("Attacking")
 
     def trigger_attack(self, *item: any) -> None:
-        player_attack = self.player.get_attack()
-        zombies = self.current_zombies
-        if len(item) == 2:  # If the player is using two items
-            if "Oil" in item and "Candle" in item:
-                print("\nYou used the oil and the candle to"
-                      " attack the zombies, it kills all of them\n")
-                self.drop_item("Oil")
-                self.state = "Moving"
-                return
-            elif "Gasoline" in item and "Candle" in item:
-                print("\nYou used the gasoline and the candle"
-                      " to attack the zombies, it kills all of them\n")
-                self.drop_item("Gasoline")
-                self.state = "Moving"
-                return
-            elif "Gasoline" in item and "Chainsaw" in item:
-                chainsaw_charge = self.player.get_item_charges("Chainsaw")
-                self.player.set_item_charges("Chainsaw", chainsaw_charge + 2)
-                player_attack += 3
-                self.drop_item("Gasoline")
-                self.player.use_item_charge("Chainsaw")
-            else:
-                print("\nThese items cannot be used together, try again\n")
-                return
-        elif len(item) == 1:
-            if "Machete" in item:
-                player_attack += 2
-            elif "Chainsaw" in item:
-                if self.player.get_item_charges("Chainsaw") > 0:
-                    player_attack += 3
-                    self.player.use_item_charge("Chainsaw")
-                else:
-                    print("\nThis item has no charges left\n")
-            elif "Golf Club" in item \
-                 or "Grisly Femur" in item \
-                 or "Board With Nails" in item:
-                player_attack += 1
-            elif "Can of Soda" in item:
-                self.player.add_health(2)
-                self.drop_item("Can of Soda")
-                print("\nUsed Can of Soda, gained 2 health\n")
-                return
-            elif "Oil" in item:
-                self.trigger_run(0)
-                return
-            else:
-                print("\nYou cannot use this item right now, try again\n")
-                return
+        self.player_attack = self.player.get_attack()
 
-        damage = zombies - player_attack
+        one_item_attack_strategy = OneItemAttackStrategy(self)
+        two_item_attack_strategy = TwoItemAttackStrategy(self)
+
+        try:
+            if len(item) == 2:
+                attack_strategy = AttackContext(two_item_attack_strategy)
+                attack_strategy.attack(item)
+
+            elif len(item) == 1:
+                attack_strategy = AttackContext(one_item_attack_strategy)
+                attack_strategy.attack(item)
+        except Exception as e:
+            return
+
+        damage = self.current_zombies - self.player_attack
         if damage < 0:
             damage = 0
         print(f"\nYou attacked the zombies, you lost {damage} health")
@@ -734,14 +726,21 @@ class Game():
             return
         else:
             self.current_zombies = 0
+            self.player_attack = 0
             if self.get_current_tile().name == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
-            self.state = "Moving"
+            self.set_state("Moving")
+
+    def choose_avalible_door(self) -> d:
+        current_tile = self.get_current_tile()
+        # get first avalibe doors
+        avaliable_door = current_tile.get_avaliable_doors()
+        return avaliable_door[0]
 
     def trigger_run(self,
                     direction: d,
                     health_lost: int) -> None:
-        self.state = "Running"
+        self.set_state("Running")
         self.select_move(direction)
         if self.state == "Moving":
             self.player.add_health(health_lost)
@@ -751,25 +750,25 @@ class Game():
             if self.get_current_tile().name == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
         else:
-            self.state = "Attacking"
+            self.set_state("Attacking")
 
     def trigger_room_effect(self, room_name: str) -> None:
         if room_name == "Garden":
             self.player.add_health(1)
             print(f"After ending your turn in the {room_name}"
                   " you have gained one health\n")
-            self.state = "Moving"
+            self.set_state("Moving")
         if room_name == "Kitchen":
             self.player.add_health(1)
             print(f"After ending your turn in the {room_name}"
                   " you have gained one health\n")
-            self.state = "Moving"
+            self.set_state("Moving")
 
     def trigger_cower(self) -> None:
         if self.can_cower:
             self.player.add_health(3)
             self.dev_cards.pop(0)
-            self.state = "Moving"
+            self.set_state("Moving")
             print("\nYou cower in fear, gaining 3 health,"
                   " but lose time with the dev card\n")
         else:
@@ -780,7 +779,7 @@ class Game():
             if item[0] == old_item_name:
                 self.player.remove_item(item)
                 print(f"You dropped the {old_item_name}")
-                self.state = "Moving"
+                self.set_state("Moving")
                 return
         print("\nThat item is not in your inventory\n")
 
@@ -806,7 +805,7 @@ class Game():
         print(f'\n{self.current_zombies} Zombies have appeared,'
               ' prepare for battle. '
               f'Use "fight"" or the "runaway" command to flee\n')
-        self.state = "Attacking"
+        self.set_state("Attacking")
         return True
 
     def search_for_totem(self) -> None:
@@ -826,7 +825,7 @@ class Game():
                 self.trigger_dev_card(self.time)
                 if self.player.health != 0:
                     print("You Won")
-                    self.state = "Game Over"
+                    self.set_state("Game Over")
         else:
             print("\nCannot bury totem here\n")
 
@@ -850,7 +849,7 @@ class Game():
         return doors
 
     def lose_game(self) -> None:
-        self.state = "Game Over"
+        self.set_state("Game Over")
 
 
 if __name__ == "__main__":

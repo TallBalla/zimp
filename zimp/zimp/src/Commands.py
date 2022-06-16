@@ -36,7 +36,7 @@ class Commands(cmd.Cmd):
         state = self.game.get_state()
         self.view.display_state(state)
 
-    def do_start(self, line: str) -> None:
+    def do_start(self) -> None:
         """Starts or resets game"""
         if self.game.get_state() == "Starting":
             self.view.error('\nGame already started, enter "place"'
@@ -167,22 +167,18 @@ class Commands(cmd.Cmd):
     def do_fight(self, line: str) -> None:
         """Used when encounter zombie and will take damage
         Damage equation is (zombie amount - player attack)"""
-        arg1 = ''
-        arg2 = 0
-        if "," in line:
-            arg1, arg2 = [item for item in line.split(", ")]
-        else:
-            arg1 = line
+
+        arg1, arg2 = [item for item in line.split(", ")]
 
         if self.game.state == "Attacking":
+            # if arg1 == '':
             if arg1 == '':
                 self.game.trigger_attack()
-            elif arg2 == 0:
+            elif arg1 != '' and arg2 == '':
                 self.game.trigger_attack(arg1)
-            elif arg1 != '' and arg2 != 0:
+            elif arg1 != '' and arg2 != '':
                 self.game.trigger_attack(arg1, arg2)
             self.handle_next_move()
-
         else:
             self.view.warning("You cannot attack right now")
 
@@ -193,7 +189,7 @@ class Commands(cmd.Cmd):
             self.display_game_info()
         if self.game.state == "Game Over":
             self.view.error("You lose, game over, you have"
-                                "succumbed to the zombie horde")
+                             "succumbed to the zombie horde")
             self.view.message('To play again, type "start"')
         else:
             self.display_game_info()
@@ -232,7 +228,7 @@ class Commands(cmd.Cmd):
             self.game.room_item = None
             self.display_game_info()
 
-    def do_draw(self, line: str) -> None:
+    def do_draw(self) -> None:
         """Draws a new development card (Must be done after evey move)"""
         if self.game.state == "Drawing Dev Card":
             self.game.trigger_dev_card(self.game.time)
