@@ -12,6 +12,8 @@ from strategy_pattern.oneItemAttackStrategy import OneItemAttackStrategy
 from strategy_pattern.twoItemAttackStrategy import TwoItemAttackStrategy
 from strategy_pattern.attackContext import AttackContext
 
+from flyweight_pattern.flyweightFactory import FlyweightFactory
+
 
 class Game():
     def __init__(self,
@@ -47,6 +49,8 @@ class Game():
         self.room_item = None
         self.db = Database("zimp")
         self.player_attack = 0
+
+        self.flywieght_factory = FlyweightFactory()
 
     # Start Willems Implementation
     def check_tile_name_foyer(self, tile: Tile) -> bool:
@@ -178,6 +182,9 @@ class Game():
         False
         '''
         return len(self.outdoor_tiles) == 0
+
+    def get_flyweight_factory(self) -> FlyweightFactory:
+        return self.flywieght_factory
 
     def get_state(self) -> str:
         return self.state
@@ -481,7 +488,8 @@ class Game():
             item = card[0]
             charges = card[7]
             dev_card = DevCard(item,
-                               charges)
+                               charges,
+                               self.flywieght_factory)
             dev_card.add_event(card[1], card[2])
             dev_card.add_event(card[3], card[4])
             dev_card.add_event(card[5], card[6])
@@ -608,12 +616,12 @@ class Game():
             tile.rotate_entrance()
 
     def trigger_dev_card(self, time: int) -> None:
-        if self.check_list_len(self.dev_cards, 0):
-            if self.check_time_is_up():
-                print("\nYou have run out of time\n")
-                self.lose_game()
-                return
+        if self.check_time_is_up():
+            print("\nYou have run out of time\n")
+            self.lose_game()
+            return
 
+        if self.check_list_len(self.dev_cards, 0):
             print("\nReshuffling The Deck\n")
             self.load_dev_cards()
             self.time += 1
@@ -626,9 +634,7 @@ class Game():
             if len(self.chosen_tile.doors) == 1 \
                and self.chosen_tile.name != "Foyer":
                 self.set_state("Choosing Door")
-                self.set_state("Choosing Door")
                 self.get_suggested_command()
-                return
             else:
                 self.set_state("Moving")
                 self.get_suggested_command()
@@ -649,6 +655,7 @@ class Game():
             else:
                 print("You didn't gain or lose any health\n")
                 self.set_state("Moving")
+
             if len(self.chosen_tile.doors) == 1 \
                and self.chosen_tile.name != "Foyer":
                 self.set_state("Choosing Door")

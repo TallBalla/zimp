@@ -1,6 +1,7 @@
+from abc import ABC, abstractmethod
 
 
-class Event:
+class EventFlyweight(ABC):
     def __init__(self, type, consquence):
         self.type = type
         self.consquence = consquence

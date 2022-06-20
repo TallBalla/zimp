@@ -11,7 +11,7 @@
   },
   {
     "items": "Gasoline",
-    "event_one": "Zombies,",
+    "event_one": "Zombies",
     "consquence_one": "4",
     "event_two": "Health",
     "consquence_two": "-1",

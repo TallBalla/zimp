@@ -1,12 +1,14 @@
-from flyweight_pattern.event import Event
+from flyweight_pattern.eventFlyweight import EventFlyweight
 
 
 class DevCard:
     def __init__(self,
                  item: str,
-                 charges: int):
+                 charges: int,
+                 flyweight_factory) -> None:
         self.item = item
         self.charges = charges
+        self.flyweight_factory = flyweight_factory
         self.events = []
 
         if self.charges != "Unlimited":
@@ -19,7 +21,7 @@ class DevCard:
         return self.events[event_index]
 
     def add_event(self, type: str, consquence: int) -> None:
-        event = Event(type, consquence)
+        event = self.flyweight_factory.get_event(type, consquence)
         self.events.append(event)
 
     def get_item(self) -> str:

@@ -1,4 +1,3 @@
-from cgi import test
 import unittest
 from parameterized import parameterized
 
@@ -21,9 +20,10 @@ class TriggerDevCardBranchTests(unittest.TestCase):
 
     def set_up_game_with_dev_cards(self,
                                    event_one,
-                                   event_three=('Item', 0)):
+                                   event_three=('Item', 0)):        
+        flyweight_factory = self.game.get_flyweight_factory()
         test_dev_cards = []
-        test_dev_card = DevCard('test', 1)
+        test_dev_card = DevCard('test', 1, flyweight_factory)
         test_dev_card.add_event(event_one[0], event_one[1])
         test_dev_card.add_event('test', 1)
         test_dev_card.add_event(event_three[0], event_three[1])
@@ -134,8 +134,8 @@ class TriggerDevCardBranchTests(unittest.TestCase):
 
     @parameterized.expand([
         ('Foyer', [], 11, [], 'Game Over', 11, ('Item', 1)),
-        ('Foyer', [], 9, [], 'Moving', 10, ('Item', 1)),
-        ('Not Foyer', [d.NORTH], 9, [], 'Choosing Door', 10, ('Item', 1)),
+        ('Foyer', [], 9, [], 'Moving', 9, ('Item', 1)),
+        ('Not Foyer', [d.NORTH], 9, [], 'Choosing Door', 9, ('Item', 1)),
     ])
     def test_trigger_dev_card_with_event_item(self,
                                               chosen_tile_name: str,
