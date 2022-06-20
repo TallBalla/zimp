@@ -19,6 +19,9 @@ class Tile:
         self.doors = doors
         self.entrance = entrance
 
+    def set_name(self, name: str) -> None:
+        self.name = name
+
     def set_x(self, x: int) -> None:
         self.x = x
 
@@ -67,3 +70,6 @@ class Tile:
                 self.change_door_position(self.doors.index(door), d.WEST)
             if door == d.WEST:
                 self.change_door_position(self.doors.index(door), d.NORTH)
+
+    def get_avaliable_doors(self) -> list:
+        return self.doors
