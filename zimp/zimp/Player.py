@@ -9,6 +9,9 @@ class Player:
         self.items = []
         self.has_totem = has_totem
 
+    def set_items(self, items: list[str]) -> None:
+        self.items = items
+
     def get_health(self) -> int:
         return self.health
 

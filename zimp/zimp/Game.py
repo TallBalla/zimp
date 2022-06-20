@@ -180,6 +180,27 @@ class Game():
     def set_state(self, state: str) -> None:
         self.state = state
 
+    def set_dev_cards(self, cards: list) -> None:
+        self.dev_cards = cards
+
+    def get_dev_cards(self) -> list:
+        return self.dev_cards
+
+    def set_chosen_tile_name(self, name: str) -> None:
+        self.chosen_tile.name = name
+
+    def get_chosen_tile_name(self) -> str:
+        return self.chosen_tile.name
+
+    def set_chosen_tile_doors(self, door: list) -> None:
+        self.chosen_tile.doors = door
+
+    def get_chosen_tile_door(self) -> list:
+        return self.chosen_tile.doors
+
+    def get_current_zombies(self) -> int:
+        return self.current_zombies
+
     def start_game(self) -> None:
         self.state = 'Starting'
 
@@ -582,12 +603,12 @@ class Game():
             tile.rotate_entrance()
 
     def trigger_dev_card(self, time: int) -> None:
-        if self.check_list_len(self.dev_cards, 0):
-            if self.check_time_is_up():
-                print("\nYou have run out of time\n")
-                self.lose_game()
-                return
+        if self.check_time_is_up():
+            print("\nYou have run out of time\n")
+            self.lose_game()
+            return
 
+        if self.check_list_len(self.dev_cards, 0):
             print("\nReshuffling The Deck\n")
             self.load_dev_cards()
             self.time += 1
@@ -621,6 +642,7 @@ class Game():
                     return
             elif self.check_event_consequence_equal_to_one(event):
                 print("You didn't gain or lose any health\n")
+                self.state = "Moving"
             if len(self.chosen_tile.doors) == 1 \
                and self.chosen_tile.name != "Foyer":
                 self.state = "Choosing Door"

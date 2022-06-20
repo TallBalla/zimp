@@ -228,7 +228,7 @@ class Commands(cmd.Cmd):
             self.game.room_item = None
             self.display_game_info()
 
-    def do_draw(self, line: str) -> None:
+    def do_draw(self) -> None:
         """Draws a new development card (Must be done after evey move)"""
         if self.game.state == "Drawing Dev Card":
             self.game.trigger_dev_card(self.game.time)
