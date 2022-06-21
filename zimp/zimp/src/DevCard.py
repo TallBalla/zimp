@@ -1,7 +1,8 @@
-from flyweight_pattern.eventFlyweight import EventFlyweight
+
+from interfaces.IDevCard import IDevCard
 
 
-class DevCard:
+class DevCard(IDevCard):
     def __init__(self,
                  item: str,
                  charges: int,
