@@ -632,7 +632,7 @@ class Game():
         if self.check_event_type(event, "Nothing"):
             print("\nThere is nothing in this room\n")
             if len(self.chosen_tile.doors) == 1 \
-               and self.chosen_tile.name != "Foyer":
+               and self.chosen_tile.get_name() != "Foyer":
                 self.set_state("Choosing Door")
                 self.get_suggested_command()
             else:
@@ -657,9 +657,9 @@ class Game():
                 self.set_state("Moving")
 
             if len(self.chosen_tile.doors) == 1 \
-               and self.chosen_tile.name != "Foyer":
+               and self.chosen_tile.get_name() != "Foyer":
                 self.set_state("Choosing Door")
-            if self.get_current_tile().name == "Garden" or "Kitchen":
+            if self.get_current_tile().get_name() == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
 
         elif self.check_event_type(event, "Item"):
@@ -678,8 +678,8 @@ class Game():
                 self.dev_cards.pop(0)
                 self.player.add_item(next_card.get_item(), next_card.charges)
                 print(f"You picked up the {next_card.get_item()}\n")
-                if len(self.chosen_tile.doors) == 1 \
-                   and self.chosen_tile.name != "Foyer":
+                if len(self.chosen_tile.get_avaliable_doors()) == 1 \
+                   and self.chosen_tile.get_name() != "Foyer":
                     self.set_state("Choosing Door")
                     self.get_suggested_command()
                 else:
@@ -695,7 +695,7 @@ class Game():
                     self.set_state("Moving")
                     self.room_item = None
                     self.get_suggested_command()
-            if self.get_current_tile().name == "Garden" or "Kitchen":
+            if self.get_current_tile().get_name() == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
         elif self.check_event_type(event, "Zombies"):
             print(f"\nThere are {event.get_consquence()} zombies in this room,"
