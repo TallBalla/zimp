@@ -736,7 +736,7 @@ class Game():
                 print("\nUsed Can of Soda, gained 2 health\n")
                 return
             elif "Oil" in item:
-                self.trigger_run(self.choose_avalible_door(),0)
+                self.trigger_run(self.choose_avalible_door(), 0)
                 return
             else:
                 print("\nYou cannot use this item right now, try again\n")
