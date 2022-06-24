@@ -1,19 +1,13 @@
 
 from interfaces.IDevCard import IDevCard
+from item import Item
 
 
 class DevCard(IDevCard):
     def __init__(self,
-                 item: str,
-                 charges: int,
                  flyweight_factory) -> None:
-        self.item = item
-        self.charges = charges
         self.flyweight_factory = flyweight_factory
         self.events = []
-
-        if self.charges != "Unlimited":
-            int(self.charges)
 
     def get_event_at_time(self, time: int) -> str:
         event_index = time - 9
@@ -25,8 +19,13 @@ class DevCard(IDevCard):
         event = self.flyweight_factory.get_event(type, consquence)
         self.events.append(event)
 
+    def set_item(self, name, charges) -> None:
+        if charges != "Unlimited":
+            int(charges)
+        self.item = Item(name, charges)
+
     def get_item(self) -> str:
-        return self.item
+        return self.item.get_name()
 
     def get_charges(self) -> int:
-        return self.charges
+        return self.charges.get_charges()

@@ -485,11 +485,8 @@ class Game():
         self.db.create_devcards()
         self.db.insert_table_data("devcards")
         for card in self.db.select_data("devcards"):
-            item = card[0]
-            charges = card[7]
-            dev_card = DevCard(item,
-                               charges,
-                               self.flywieght_factory)
+            dev_card = DevCard(self.flywieght_factory)
+            dev_card.set_item(card[0], card[7])
             dev_card.add_event(card[1], card[2])
             dev_card.add_event(card[3], card[4])
             dev_card.add_event(card[5], card[6])
@@ -732,7 +729,7 @@ class Game():
         else:
             self.current_zombies = 0
             self.player_attack = 0
-            if self.get_current_tile().name == "Garden" or "Kitchen":
+            if self.get_current_tile().get_name() == "Garden" or "Kitchen":
                 self.trigger_room_effect(self.get_current_tile().name)
             self.set_state("Moving")
 
