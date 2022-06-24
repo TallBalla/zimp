@@ -1,5 +1,8 @@
 
 
+from item import Item
+
+
 class Player:
     def __init__(self, attack=1, health=6, x=16, y=16, has_totem=False):
         self.attack = attack
@@ -36,30 +39,34 @@ class Player:
     def remove_attack(self, attack: int) -> None:
         self.attack -= attack
 
-    def get_items(self) -> list[str]:
+    def get_items(self):
         return self.items
+
+    def get_items_names(self):
+        return [item.get_name() for item in self.items]
 
     def get_item_charges(self, item_name: str) -> int:
         for check_item in self.get_items():
-            if check_item[0] == item_name:
-                return check_item[1]
+            if check_item.get_name() == item_name:
+                return check_item.get_charges()
 
     def set_item_charges(self, item_name: str, charge: int) -> None:
         for check_item in self.get_items():
-            if check_item[0] == item_name:
-                check_item[1] = charge
+            if check_item.get_name() == item_name:
+                check_item.set_charge(charge)
 
     def use_item_charge(self, item_name: str) -> None:
         for check_item in self.get_items():
-            if check_item[0] == item_name:
-                check_item[1] -= 1
+            if check_item.get_name() == item_name:
+                check_item.minus_charge(1)
 
     def add_item(self, item_name: str, charges: int) -> None:
-        if len(self.items) < 2:
-            self.items.append([item_name, charges])
+        self.items.append(Item(item_name, charges))
 
-    def remove_item(self, item: list) -> None:
-        self.items.pop(self.items.index(item))
+    def remove_item(self, item_name: str) -> None:
+        for check_item in self.get_items():
+            if check_item.get_name() == item_name:
+                self.items.remove(check_item)
 
     def set_x(self, x: int) -> None:
         self.x = x
@@ -80,4 +87,7 @@ class Player:
         self.attack = attack
 
     def set_items(self, items: list[str]) -> None:
-        self.items = items
+        for item in items:
+            self.add_item(item[0], item[1])
+
+

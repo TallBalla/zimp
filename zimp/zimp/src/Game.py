@@ -343,22 +343,22 @@ class Game():
     def check_current_direct_north_and_entrance_south(self,
                                                       tile: Tile) -> bool:
         return self.current_move_direction == d.NORTH \
-               and tile.entrance == d.SOUTH
+            and tile.entrance == d.SOUTH
 
     def check_current_direct_south_and_entrance_north(self,
                                                       tile: Tile) -> bool:
         return self.current_move_direction == d.SOUTH \
-               and tile.entrance == d.NORTH
+            and tile.entrance == d.NORTH
 
     def check_current_direct_east_and_entrance_west(self,
                                                     tile: Tile) -> bool:
         return self.current_move_direction == d.EAST \
-               and tile.entrance == d.WEST
+            and tile.entrance == d.WEST
 
     def check_current_direct_west_and_entrance_east(self,
                                                     tile: Tile) -> bool:
         return self.current_move_direction == d.WEST \
-               and tile.entrance == d.EAST
+            and tile.entrance == d.EAST
 
     def check_tile_outdoors(self, tile: Tile) -> bool:
         return tile.type == "Outdoor"
@@ -657,7 +657,7 @@ class Game():
                and self.chosen_tile.get_name() != "Foyer":
                 self.set_state("Choosing Door")
             if self.get_current_tile().get_name() == "Garden" or "Kitchen":
-                self.trigger_room_effect(self.get_current_tile().name)
+                self.trigger_room_effect(self.get_current_tile().get_name())
 
         elif self.check_event_type(event, "Item"):
             if self.check_list_len(self.dev_cards, 0):
@@ -693,27 +693,26 @@ class Game():
                     self.room_item = None
                     self.get_suggested_command()
             if self.get_current_tile().get_name() == "Garden" or "Kitchen":
-                self.trigger_room_effect(self.get_current_tile().name)
+                self.trigger_room_effect(self.get_current_tile().get_name())
         elif self.check_event_type(event, "Zombies"):
             print(f"\nThere are {event.get_consquence()} zombies in this room,"
                   "prepare to fight!\n")
             self.current_zombies = int(event.get_consquence())
             self.set_state("Attacking")
 
-    def trigger_attack(self, *item: any) -> None:
+    def trigger_attack(self, *item_names: list[str]) -> None:
         self.player_attack = self.player.get_attack()
 
         one_item_attack_strategy = OneItemAttackStrategy(self)
         two_item_attack_strategy = TwoItemAttackStrategy(self)
-
+        
         try:
-            if len(item) == 2:
+            if len(item_names) == 2:
                 attack_strategy = AttackContext(two_item_attack_strategy)
-                attack_strategy.attack(item)
-
-            elif len(item) == 1:
+                attack_strategy.attack(item_names)
+            elif len(item_names) == 1:
                 attack_strategy = AttackContext(one_item_attack_strategy)
-                attack_strategy.attack(item)
+                attack_strategy.attack(item_names)
         except Exception as e:
             return
 
@@ -730,7 +729,7 @@ class Game():
             self.current_zombies = 0
             self.player_attack = 0
             if self.get_current_tile().get_name() == "Garden" or "Kitchen":
-                self.trigger_room_effect(self.get_current_tile().name)
+                self.trigger_room_effect(self.get_current_tile().get_name())
             self.set_state("Moving")
 
     def choose_avalible_door(self) -> d:
@@ -749,8 +748,8 @@ class Game():
             print(f"\nYou run away from the zombies, and"
                   " lose {health_lost} health\n")
             self.can_cower = True
-            if self.get_current_tile().name == "Garden" or "Kitchen":
-                self.trigger_room_effect(self.get_current_tile().name)
+            if self.get_current_tile().get_name() == "Garden" or "Kitchen":
+                self.trigger_room_effect(self.get_current_tile().get_name())
         else:
             self.set_state("Attacking")
 
@@ -777,20 +776,20 @@ class Game():
             return print("\nCannot cower during a zombie door attack\n")
 
     def drop_item(self, old_item_name: str) -> None:
-        for item in self.player.get_items():
-            if item[0] == old_item_name:
-                self.player.remove_item(item)
+        for item_name in self.player.get_items_names():
+            if item_name == old_item_name:
+                self.player.remove_item(old_item_name)
                 print(f"You dropped the {old_item_name}")
                 self.set_state("Moving")
                 return
         print("\nThat item is not in your inventory\n")
 
-    def use_item(self, *item: any) -> None:
-        if "Can of Soda" in item:
+    def use_item(self, *item_names: any) -> None:
+        if "Can of Soda" in item_names:
             self.player.add_health(2)
             self.drop_item("Can of Soda")
             print("Used Can of Soda, gained 2 health")
-        elif "Gasoline" in item and "Chainsaw" in item:
+        elif "Gasoline" in item_names and "Chainsaw" in item_names:
             chainsaw_charge = self.player.get_item_charges("Chainsaw")
             self.player.set_item_charges("Chainsaw", chainsaw_charge + 2)
             self.drop_item("Gasoline")

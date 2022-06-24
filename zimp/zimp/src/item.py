@@ -11,3 +11,9 @@ class Item(IItem):
 
     def get_charges(self) -> int:
         return self.charges
+
+    def set_charge(self, charge: int) -> None:
+        self.charges = charge
+
+    def minus_charge(self, charge: int) -> None:
+        self.charges -= charge

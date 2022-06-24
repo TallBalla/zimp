@@ -1,6 +1,5 @@
 import unittest
 from parameterized import parameterized
-
 from Commands import Commands
 
 
@@ -121,18 +120,17 @@ class TriggerAttackBranchTests(unittest.TestCase):
             self.assertEqual(self.game.get_state(), expected_state)
 
     @parameterized.expand([
-        (0, 'Oil', 'Candle', 2, [['Candle', 2]], 'Moving', 6),
-        (4, 'Gasoline', 'Candle', 2, [['Candle', 2]], 'Moving', 6),
-        (3, 'Gasoline', 'Chainsaw', 2, [['Chainsaw', 3]], 'Moving', 6),
-        (3, 'Machete', 'Chainsaw', 2, [['Machete', 2], ['Chainsaw', 2]],
-         'Attacking', 6),
+        (0, 'Oil', 'Candle', 2, ['Candle'], 'Moving', 6),
+        (4, 'Gasoline', 'Candle', 2, ['Candle'], 'Moving', 6),
+        (3, 'Gasoline', 'Chainsaw', 2, ['Chainsaw'], 'Moving', 6),
+        (3, 'Machete', 'Chainsaw', 2, ['Machete', 'Chainsaw'], 'Attacking', 6),
     ])
     def test_trigger_attack_with_two_attack_items(self,
                                                   zombie_count: int,
                                                   item_one_name: str,
                                                   item_two_name: str,
                                                   item_charge: str,
-                                                  expected_items: list,
+                                                  expected_item_names,
                                                   expected_state: str,
                                                   expected_player_health: int):
 
@@ -154,7 +152,8 @@ class TriggerAttackBranchTests(unittest.TestCase):
             self.assertEqual(self.game.get_state(), expected_state)
 
         with self.subTest(f'player_items_equal'):
-            self.assertEqual(self.player.get_items(), expected_items)
+            self.assertEqual(self.player.get_items_names(),
+                             expected_item_names)
 
 
 if __name__ == '__main__':
