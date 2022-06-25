@@ -4,10 +4,11 @@ from item import Item
 
 
 class DevCard(IDevCard):
-    def __init__(self,
-                 flyweight_factory) -> None:
-        self.flyweight_factory = flyweight_factory
+    def __init__(self) -> None:
         self.events = []
+
+    def set_flyweight_facotry(self, flyweight_factory) -> None:
+        self.flyweight_factory = flyweight_factory
 
     def get_event_at_time(self, time: int) -> str:
         event_index = time - 9

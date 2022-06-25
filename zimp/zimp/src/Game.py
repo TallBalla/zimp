@@ -485,7 +485,8 @@ class Game():
         self.db.create_devcards()
         self.db.insert_table_data("devcards")
         for card in self.db.select_data("devcards"):
-            dev_card = DevCard(self.flywieght_factory)
+            dev_card = DevCard()
+            dev_card.set_flyweight_facotry(self.flywieght_factory)
             dev_card.set_item(card[0], card[7])
             dev_card.add_event(card[1], card[2])
             dev_card.add_event(card[3], card[4])
