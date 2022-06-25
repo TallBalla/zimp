@@ -23,7 +23,8 @@ class TriggerDevCardBranchTests(unittest.TestCase):
                                    event_three=('Item', 0)):     
         flyweight_factory = self.game.get_flyweight_factory()
         test_dev_cards = []
-        test_dev_card = DevCard(flyweight_factory)
+        test_dev_card = DevCard()
+        test_dev_card.set_flyweight_facotry(flyweight_factory)
         test_dev_card.set_item('test', 1)
         test_dev_card.add_event(event_one[0], event_one[1])
         test_dev_card.add_event('test', 1)
