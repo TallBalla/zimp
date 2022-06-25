@@ -704,15 +704,15 @@ class Game():
     def trigger_attack(self, *item_names: list[str]) -> None:
         self.player_attack = self.player.get_attack()
 
-        attack_context = AttackContext()
-
+        attack_context = None
         try:
             if len(item_names) == 2:
-                attack_context.set_attack_strategy(TwoItemAttackStrategy(self))
-                attack_context.attack(item_names)
+                attack_context = AttackContext(TwoItemAttackStrategy(self))
 
             elif len(item_names) == 1:
-                attack_context.set_attack_strategy(OneItemAttackStrategy(self))
+                attack_context = AttackContext(OneItemAttackStrategy(self))
+
+            if attack_context is not None:
                 attack_context.attack(item_names)
         except Exception as e:
             return
