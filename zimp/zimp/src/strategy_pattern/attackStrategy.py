@@ -5,5 +5,6 @@ class AttackStrategy(ABC):
     def __init__(self, context):
         self.context = context
 
+    @abstractmethod
     def attack(self, item_names: list[str]) -> None:
-        pass
+        raise NotImplementedError

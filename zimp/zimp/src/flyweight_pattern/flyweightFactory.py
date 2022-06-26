@@ -10,7 +10,7 @@ class FlyweightFactory:
     def __init__(self):
         self.events = {}
 
-    def get_consquence_phrase(self, consquence):
+    def generate_consquence_phrase(self, consquence):
         if consquence is None:
             return 'None'
         try:
@@ -25,7 +25,7 @@ class FlyweightFactory:
             return 'equal'
 
     def generate_key(self, consquence):
-        return self.get_consquence_phrase(consquence) + str(consquence)
+        return self.generate_consquence_phrase(consquence) + str(consquence)
 
     def get_event(self, type, consquence):
         event_key = self.generate_key(consquence)
