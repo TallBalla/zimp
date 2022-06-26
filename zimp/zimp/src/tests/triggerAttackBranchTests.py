@@ -11,7 +11,6 @@ class TriggerAttackBranchTests(unittest.TestCase):
         self.game.place_tile(16, 16)
         self.player = None
 
-    # remove all intances of commands from memory
     def tearDown(self) -> None:
         del self.commands
         del self.game
