@@ -26,7 +26,6 @@ class TriggerAttackBranchTests(unittest.TestCase):
         self.player.set_attack(attack)
         self.player.set_health(health)
 
-        # zombie_count, attack, health, expected_health, expected_state
     @parameterized.expand([
         ('Attacking', 2, 0, 6, 4, 'Moving'),
         ('Attacking', 0, 0, 6, 6, 'Moving'),
