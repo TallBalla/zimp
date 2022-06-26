@@ -6,8 +6,8 @@ import unittest
 from tests.gameUnittests import GameTestMethods
 from tests.playerUnittests import PlayerTestMethods
 from tests.tileUnittests import TileTestMethods
-from tests.triggerAttackBranchTests import TriggerAttackBranchTests
-from tests.triggerDevCardBranchTests import TriggerDevCardBranchTests
+from triggerAttackBranchTests import TriggerAttackBranchTests
+from triggerDevCardBranchTests import TriggerDevCardBranchTests
 
 
 def suite():
